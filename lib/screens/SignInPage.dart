@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:house_management_project/components/ImageLogo.dart';
 import 'package:house_management_project/components/RoundedButton.dart';
 import 'package:house_management_project/components/TextInput.dart';
 import 'package:house_management_project/components/TextPasswordInput.dart';
@@ -195,10 +194,7 @@ class _SignInPageState extends State<SignInPage> {
       jsonData = jsonDecode(response.body);
       print(jsonData['hoTen']);
       setState(() {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
       });
     } else {
       showErr = "Wrong Username or Password";
