@@ -52,7 +52,7 @@ class _SignInPageState extends State<SignInPage> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       TextInput(
-                        text: 'Username',
+                        text: 'Tên đăng nhập',
                         icon: Icon(
                           MyFlutterApp.user,
                           color: Colors.black,
@@ -61,7 +61,7 @@ class _SignInPageState extends State<SignInPage> {
                         controller: username,
                       ),
                       TextPasswordInput(
-                        text: 'Password',
+                        text: 'Mật khẩu',
                         icon: Icon(
                           Icons.lock,
                           color: Colors.black,
@@ -84,7 +84,7 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                       GestureDetector(
                         child: Text(
-                          'Forgot Password ?',
+                          'Quên mật khẩu ?',
                           style: TextStyle(
                             color: PrimaryColor,
                             fontSize: 17,
@@ -112,7 +112,7 @@ class _SignInPageState extends State<SignInPage> {
                     vertical: 20,
                   ),
                   child: RoundedButton(
-                    text: 'LOGIN',
+                    text: 'Đăng nhập',
                     press: onSignInClicked,
                   ),
                 ),
@@ -125,7 +125,7 @@ class _SignInPageState extends State<SignInPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Don\'t have an Account ?\t\t\t\t',
+                        'Chưa có tài khoản ?\t\t\t\t\t',
                         style: TextStyle(
                           fontSize: 16,
                           color: Color(0xFFACACAC),
@@ -134,7 +134,7 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                       GestureDetector(
                         child: Text(
-                          'Sign Up',
+                          'Đăng ký',
                           style: TextStyle(
                             color: PrimaryColor,
                             fontWeight: FontWeight.w700,
@@ -170,7 +170,7 @@ class _SignInPageState extends State<SignInPage> {
         checkSignIn(username.text, password.text);
         // Navigator.pushReplacement(
         //   context,
-        //   MaterialPageRoute(builder: (context) => HomePage()),
+        //   MaterialPageRoute(builder: (context) => HomePage(username: username.text,)),
         // );
       }
     });
@@ -179,25 +179,29 @@ class _SignInPageState extends State<SignInPage> {
   void checkSignIn(String username, String password) async {
     var jsonData = null;
     var url = Uri.parse(
-        'https://movie0706.cybersoft.edu.vn/api/QuanLyNguoiDung/DangNhap');
+        'https://localhost:44322/api/accounts/authenticate');
     var response = await http.post(
       url,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode({
-        'taiKhoan': username,
-        'matKhau': password,
+        'username': username,
+        'password': password,
       }),
     );
     if (response.statusCode == 200) {
       jsonData = jsonDecode(response.body);
-      print(jsonData['hoTen']);
+      print(jsonData['username']);
+      print(jsonData);
       setState(() {
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomePage(username: username)), (route) => false);
       });
     } else {
-      showErr = "Wrong Username or Password";
+      setState(() {
+         showErr = "Wrong Username or Password";
+      });
+     
     }
   }
 }

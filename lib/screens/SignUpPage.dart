@@ -19,7 +19,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool showRePass = false;
   String showErr = "";
   String valueChoose;
-  List listItem = ["Landlord", "Tenant"];
+  List listItem = ["Chủ trọ", "Người thuê"];
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -47,7 +47,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: Column(
                     children: [
                       TextInput(
-                        text: 'Username',
+                        text: 'Tên đăng nhập',
                         icon: Icon(
                           MyFlutterApp.user,
                           color: Colors.black,
@@ -56,7 +56,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         controller: username,
                       ),
                       TextPasswordInput(
-                        text: 'Password',
+                        text: 'Mật khẩu',
                         icon: Icon(
                           Icons.lock,
                           color: Colors.black,
@@ -78,7 +78,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         controller: password,
                       ),
                       TextPasswordInput(
-                        text: 'Re-Password',
+                        text: 'Xác nhận mật khẩu',
                         icon: Icon(
                           Icons.lock,
                           color: Colors.black,
@@ -115,7 +115,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           child: DropdownButton(
                             icon: Icon(Icons.arrow_drop_down),
                             iconSize: 35,
-                            hint: Text('Select a Role'),
+                            hint: Text('Chọn vai trò'),
                             isExpanded: true,
                             style: TextStyle(
                               color: Colors.black,
@@ -156,7 +156,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     top: 10,
                   ),
                   child: RoundedButton(
-                    text: 'SIGN UP',
+                    text: 'Đăng ký',
                     press: onSignUpClicked,
                   ),
                 ),
@@ -169,7 +169,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Already have an Account ?\t\t\t\t',
+                        'Bạn đã có tài khoản ?\t\t\t\t',
                         style: TextStyle(
                           fontSize: 16,
                           color: Color(0xFFACACAC),
@@ -178,7 +178,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       GestureDetector(
                         child: Text(
-                          'Sign In',
+                          'Đăng nhập',
                           style: TextStyle(
                             color: PrimaryColor,
                             fontWeight: FontWeight.w700,
@@ -209,7 +209,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         style: TextStyle(color: Color(0xFF707070)),
                       ),
                       Text(
-                        'OR',
+                        'HOẶC',
                         style: TextStyle(
                             color: PrimaryColor, fontWeight: FontWeight.w700),
                       ),
