@@ -18,7 +18,6 @@ class _SignInPageState extends State<SignInPage> {
   TextEditingController username = new TextEditingController();
   TextEditingController password = new TextEditingController();
   bool showPass = false;
-  String loginErr = "Username and Password can't be blank !!!";
   String showErr = "";
 
   @override
@@ -28,131 +27,146 @@ class _SignInPageState extends State<SignInPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            height: size.height,
-            width: size.height,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(
-                    bottom: 30,
+            padding: EdgeInsets.symmetric(vertical: 100, horizontal: 40),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/ImageBackground.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Container(
+              height: size.height * 0.78,
+              width: size.width * 0.9,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.brown, width: 2),
+                borderRadius: BorderRadius.circular(25),
+                color: Colors.white38,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(
+                      bottom: 30,
+                    ),
+                    child: Image(
+                      image: AssetImage('assets/images/logo_image.png'),
+                      fit: BoxFit.scaleDown,
+                      height: size.height * 0.23,
+                      width: size.width * 0.4,
+                    ),
                   ),
-                  height: size.height * 0.27,
-                  child: Image(
-                    image: AssetImage('assets/images/house_icon.png'),
-                    fit: BoxFit.fill,
-                    width: size.width * 0.54,
+                  SizedBox(
+                    height: 30,
                   ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      TextInput(
-                        text: 'Tên đăng nhập',
-                        icon: Icon(
-                          MyFlutterApp.user,
-                          color: Colors.black,
+                  Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        TextInput(
+                          text: 'Tên đăng nhập',
+                          icon: Icon(
+                            MyFlutterApp.user,
+                            color: Colors.black,
+                          ),
+                          hidePass: false,
+                          controller: username,
                         ),
-                        hidePass: false,
-                        controller: username,
-                      ),
-                      TextPasswordInput(
-                        text: 'Mật khẩu',
-                        icon: Icon(
-                          Icons.lock,
-                          color: Colors.black,
+                        TextPasswordInput(
+                          text: 'Mật khẩu',
+                          icon: Icon(
+                            Icons.lock,
+                            color: Colors.black,
+                          ),
+                          backIcon: GestureDetector(
+                            child: Icon(
+                              showPass
+                                  ? MyFlutterApp.eye
+                                  : MyFlutterApp.eye_slash,
+                              size: 20,
+                            ),
+                            onTap: () {
+                              setState(() {
+                                showPass = !showPass;
+                              });
+                            },
+                          ),
+                          hidePass: !showPass,
+                          controller: password,
                         ),
-                        backIcon: GestureDetector(
-                          child: Icon(
-                            showPass
-                                ? MyFlutterApp.eye
-                                : MyFlutterApp.eye_slash,
-                            size: 20,
+                        GestureDetector(
+                          child: Text(
+                            'Quên mật khẩu ?',
+                            style: TextStyle(
+                              color: PrimaryColor,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Text(
+                    showErr.isEmpty ? '' : showErr,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(
+                      vertical: 20,
+                    ),
+                    child: RoundedButton(
+                      text: 'Đăng nhập',
+                      press: onSignInClicked,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(
+                      top: 30,
+                    ),
+                    width: size.width * 0.7,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Chưa có tài khoản ?\t\t\t\t\t',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFFACACAC),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        GestureDetector(
+                          child: Text(
+                            'Đăng ký',
+                            style: TextStyle(
+                              color: PrimaryColor,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 18,
+                            ),
                           ),
                           onTap: () {
-                            setState(() {
-                              showPass = !showPass;
-                            });
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignUpPage()),
+                            );
                           },
                         ),
-                        hidePass: !showPass,
-                        controller: password,
-                      ),
-                      GestureDetector(
-                        child: Text(
-                          'Quên mật khẩu ?',
-                          style: TextStyle(
-                            color: PrimaryColor,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        onTap: () {},
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Text(
-                  showErr.isEmpty ? '' : showErr,
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(
-                    vertical: 20,
-                  ),
-                  child: RoundedButton(
-                    text: 'Đăng nhập',
-                    press: onSignInClicked,
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(
-                    top: 30,
-                  ),
-                  width: size.width * 0.7,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Chưa có tài khoản ?\t\t\t\t\t',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFFACACAC),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      GestureDetector(
-                        child: Text(
-                          'Đăng ký',
-                          style: TextStyle(
-                            color: PrimaryColor,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 18,
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SignUpPage()),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -163,9 +177,9 @@ class _SignInPageState extends State<SignInPage> {
   void onSignInClicked() {
     setState(() {
       if (username.text.isEmpty && password.text.isEmpty) {
-        showErr = loginErr;
+        showErr = "Tên đăng nhập và mật khẩu không được trống !!!";
       } else if (username.text.isEmpty || password.text.isEmpty) {
-        showErr = "Username or Password can't be blank !!!";
+        showErr = "Tên đăng nhập hoặc mật khẩu không được trống !!!";
       } else {
         checkSignIn(username.text, password.text);
         // Navigator.pushReplacement(
@@ -199,7 +213,7 @@ class _SignInPageState extends State<SignInPage> {
       });
     } else {
       setState(() {
-         showErr = "Wrong Username or Password";
+         showErr = "Sai tên đăng nhập hoặc tài khoản";
       });
      
     }
