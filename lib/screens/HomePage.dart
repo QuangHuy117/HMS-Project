@@ -1,11 +1,11 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
-import 'package:house_management_project/models/House.dart';
+import 'package:house_management_project/screens/DisplayBillPage.dart';
+import 'package:house_management_project/screens/ListContractPage.dart';
+import 'package:house_management_project/screens/NotificationPage.dart';
 import 'package:house_management_project/tabScreens/LandLordProfile.dart';
 import 'package:house_management_project/tabScreens/ListHouseView.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   final String username;
@@ -18,40 +18,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
-  List<House> list = [];
-
-  getHouseData() async {
-    var url = Uri.parse(
-        'https://localhost:44322/api/houses?username=${widget.username}');
-    try {
-      var response = await http.get(url);
-      print(response.statusCode);
-      if (response.statusCode == 200) {
-        var items = jsonDecode(response.body);
-        setState(() {
-          print(items);
-          for (var u in items) {
-            print(u);
-            House house = new House.fromJson(u);
-            list.add(house);
-          }
-        });
-      }
-    } catch (error) {
-      throw (error);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    this.getHouseData();
-  }
 
   @override
   Widget build(BuildContext context) {
     final tabs = [
-      ListHouseView(list: list, username: widget.username,),
+      ListHouseView(username: widget.username,),
+      DisplayBillPage(),
+      ListContractPage(),
+      NotificationPage(),
       LandLordProfile(),
     ];
 
@@ -63,43 +37,63 @@ class _HomePageState extends State<HomePage> {
             boxShadow: [
               BoxShadow(
                 color: Colors.grey,
-                blurRadius: 6,
+                blurRadius: 5,
+                spreadRadius: 1,
               )
             ],
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(25),
-              topRight: Radius.circular(25),
+              topLeft: Radius.circular(15),
+              topRight: Radius.circular(15),
             ),
             child: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              iconSize: 25,
+              unselectedFontSize: 12,
+              selectedFontSize: 12,
+              backgroundColor: Colors.lightBlue,
+              selectedItemColor: Colors.black,
+              unselectedItemColor: Colors.white,
               currentIndex: _currentIndex,
               items: [
                 BottomNavigationBarItem(
                     icon: Icon(
-                      Icons.house,
-                      size: 35,
+                      MyFlutterApp.home,
+                      size: 28,
                     ),
-                    label: ''),
+                    label: 'Trang chủ'),
+                    BottomNavigationBarItem(
+                    icon: Icon(
+                      MyFlutterApp.clipboard,
+                    ),
+                    label: 'Hóa đơn'),
+                BottomNavigationBarItem(
+                    icon: Icon(
+                      MyFlutterApp.file_contract,
+                    ),
+                    label: 'Hợp đồng'),
+                BottomNavigationBarItem(
+                    icon: Icon(
+                      MyFlutterApp.bell,
+                    ),
+                    label: 'Thông báo'),
+                
                 BottomNavigationBarItem(
                     icon: Icon(
                       MyFlutterApp.user,
-                      size: 28,
                     ),
-                    label: ''),
+                    label: 'Hồ sơ'),
               ],
               onTap: (value) {
                 setState(() {
                   _currentIndex = value;
-                  
                 });
-                
               },
             ),
           ),
         ),
-        body:
-            tabs[_currentIndex],
+        body: tabs[_currentIndex],
       ),
     );
   }

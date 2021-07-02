@@ -4,8 +4,8 @@ import 'package:house_management_project/components/TextInput.dart';
 import 'package:house_management_project/components/TextPasswordInput.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/main.dart';
+import 'package:house_management_project/screens/AccountProvider.dart';
 import 'package:house_management_project/screens/SignUpPage.dart';
-import 'package:house_management_project/screens/HomePage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -57,7 +57,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                   SizedBox(
-                    height: 30,
+                    height: size.height * 0.04,
                   ),
                   Container(
                     child: Column(
@@ -109,7 +109,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                   SizedBox(
-                    height: 15,
+                    height: size.height * 0.015,
                   ),
                   Text(
                     showErr.isEmpty ? '' : showErr,
@@ -209,7 +209,8 @@ class _SignInPageState extends State<SignInPage> {
       print(jsonData['username']);
       print(jsonData);
       setState(() {
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomePage(username: username)), (route) => false);
+        // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomePage(username: username)), (route) => false);
+         Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => AccountProvider(account: jsonData,)), (route) => false);
       });
     } else {
       setState(() {
