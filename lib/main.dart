@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:house_management_project/screens/SignInPage.dart';
+import 'package:house_management_project/screens/SignIn/SignInPage.dart';
 
 
 class MyHttpOverrides extends HttpOverrides{
@@ -32,4 +32,5 @@ class MyApp extends StatelessWidget {
       home: SignInPage(),
     );
   }
+
 }

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:house_management_project/components/RoundedButton.dart';
 import 'package:house_management_project/components/TextInput.dart';
 import 'package:house_management_project/components/TextPasswordInput.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/main.dart';
-import 'package:house_management_project/screens/AccountProvider.dart';
-import 'package:house_management_project/screens/SignUpPage.dart';
+import 'package:house_management_project/screens/HomePage.dart';
+import 'package:house_management_project/screens/SignUp/SignUpPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -28,12 +29,13 @@ class _SignInPageState extends State<SignInPage> {
         child: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(vertical: 100, horizontal: 40),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/ImageBackground.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
+            // decoration: BoxDecoration(
+            //   image: DecorationImage(
+            //     image: AssetImage('assets/images/ImageBackground.jpg'),
+            //     fit: BoxFit.cover,
+            //   ),
+            // ),
+            color: Color(0xFFFFF5EE),
             child: Container(
               height: size.height * 0.78,
               width: size.width * 0.9,
@@ -206,11 +208,19 @@ class _SignInPageState extends State<SignInPage> {
     );
     if (response.statusCode == 200) {
       jsonData = jsonDecode(response.body);
-      print(jsonData['username']);
-      print(jsonData);
+      // print(jsonData['username']);
+      // print(jsonData);
+      // print(jsonData['response']['token']);
+      var session = FlutterSession();
+      await session.set("name", jsonData['response']['name']);
+      await session.set("username", jsonData['response']['username']);
+      await session.set("phone", jsonData['response']['phone']);
+      await session.set("email", jsonData['response']['email']);
+      await session.set("role", jsonData['response']['role']);
+      await session.set("token", jsonData['response']['token']);
       setState(() {
-        // Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomePage(username: username)), (route) => false);
-         Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => AccountProvider(account: jsonData,)), (route) => false);
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
+        //  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => AccountProvider(account: jsonData,)), (route) => false);
       });
     } else {
       setState(() {

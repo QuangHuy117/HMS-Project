@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/main.dart';
-import 'package:house_management_project/models/Account.dart';
 import 'package:house_management_project/models/House.dart';
 import 'package:house_management_project/screens/House/HouseSettingPage.dart';
-import 'package:house_management_project/screens/Room/RoomPage.dart';
-import 'package:provider/provider.dart';
+import 'package:house_management_project/screens/Room/RoomNavigationBar.dart';
 
 class ListHouseNotUsing extends StatefulWidget {
   final List<House> list;
@@ -18,7 +16,6 @@ class ListHouseNotUsing extends StatefulWidget {
 class _ListHouseNotUsingState extends State<ListHouseNotUsing> {
   @override
   Widget build(BuildContext context) {
-    Account account = Provider.of<Account>(context);
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Container(
@@ -40,10 +37,9 @@ class _ListHouseNotUsingState extends State<ListHouseNotUsing> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => RoomPage(
+                          builder: (context) => RoomNavigationBar(
                               houseId: widget.list[index].id,
-                              list: widget.list,
-                              username: account.username)),
+                              )),
                     );
                   },
                   child: Card(

@@ -24,6 +24,10 @@
 ///         Author:    Google
 ///         License:   Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
 ///         Homepage:  https://design.google.com/icons/
+/// * RPG Awesome, Copyright (c) 2014, Daniela Howe
+///         Author:    Daniela Howe & Ivan Montiel
+///         License:   SIL (http://scripts.sil.org/OFL)
+///         Homepage:  http://nagoshiashumari.github.io/Rpg-Awesome/
 /// * Font Awesome 5, Copyright (C) 2016 by Dave Gandy
 ///         Author:    Dave Gandy
 ///         License:   SIL (https://github.com/FortAwesome/Font-Awesome/blob/master/LICENSE.txt)
@@ -43,9 +47,14 @@ class MyFlutterApp {
   static const IconData phone = IconData(0xe803, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData mail = IconData(0xe804, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData calendar = IconData(0xe805, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData clipboard = IconData(0xe806, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData lightning_bolt = IconData(0xea2d, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData water_drop = IconData(0xeae4, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData user = IconData(0xf007, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData list_alt = IconData(0xf022, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData eye = IconData(0xf06e, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData eye_slash = IconData(0xf070, fontFamily: _kFontFam, fontPackage: _kFontPkg);
   static const IconData gplus = IconData(0xf0d5, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData door_open = IconData(0xf52b, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData bell = IconData(0xf0f3, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData file_contract = IconData(0xf56c, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

@@ -1,43 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_session/flutter_session.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/screens/Bill/ListBillPage.dart';
 import 'package:house_management_project/screens/Contract/ListContractPage.dart';
 import 'package:house_management_project/screens/NotificationPage.dart';
+import 'package:house_management_project/screens/Room/RoomPage.dart';
 import 'package:house_management_project/screens/Profile/LandLordProfile.dart';
-import 'package:house_management_project/screens/House/ListHouseView.dart';
-import 'package:flutter/foundation.dart';
 
-class HomePage extends StatefulWidget {
-  HomePage({
-    Key key,
-  }) : super(key: key);
+class RoomNavigationBar extends StatefulWidget {
+  final String houseId;
+  const RoomNavigationBar(
+      {Key key,
+      @required this.houseId})
+      : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _RoomNavigationBarState createState() => _RoomNavigationBarState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _RoomNavigationBarState extends State<RoomNavigationBar> {
   int _currentIndex = 0;
-  dynamic username, name, email;
-
-  getSession() async {
-    username = await FlutterSession().get("username");
-    name = await FlutterSession().get("name");
-    email = await FlutterSession().get("email");
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getSession();
-  }
+  
 
   @override
   Widget build(BuildContext context) {
-    //  Account account = Provider.of<Account>(context);
     final tabs = [
-      ListHouseView(),
+      RoomPage(
+        houseId: widget.houseId,
+      ),
       ListBillPage(),
       ListContractPage(),
       NotificationPage(),
@@ -52,15 +41,14 @@ class _HomePageState extends State<HomePage> {
             boxShadow: [
               BoxShadow(
                 color: Colors.grey,
-                blurRadius: 5,
-                spreadRadius: 1,
+                blurRadius: 6,
               )
             ],
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(15),
-              topRight: Radius.circular(15),
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
             ),
             child: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
@@ -74,10 +62,10 @@ class _HomePageState extends State<HomePage> {
               items: [
                 BottomNavigationBarItem(
                     icon: Icon(
-                      MyFlutterApp.home,
+                      Icons.meeting_room,
                       size: 28,
                     ),
-                    label: 'Danh sách nhà'),
+                    label: 'Danh sách phòng'),
                 BottomNavigationBarItem(
                     icon: Icon(
                       MyFlutterApp.clipboard,
@@ -100,6 +88,7 @@ class _HomePageState extends State<HomePage> {
                     label: 'Hồ sơ'),
               ],
               onTap: (value) {
+                print(value);
                 setState(() {
                   _currentIndex = value;
                 });

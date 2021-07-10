@@ -14,7 +14,7 @@ class AccountProvider extends StatelessWidget {
 
     return Provider<Account>(
       create: (_) => accountData,
-      child: HomePage(username: accountData.username),
+      child: HomePage(),
     );
   }
 }

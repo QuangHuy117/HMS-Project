@@ -7,7 +7,6 @@ class HouseInfo {
     String address;
     bool status;
     String houseId;
-    int numberOfRoom;
 
     
     HouseInfo({
@@ -16,7 +15,6 @@ class HouseInfo {
         this.address,
         this.status,
         this.houseId,
-        this.numberOfRoom,
     });
 
 
@@ -26,7 +24,6 @@ class HouseInfo {
         address: json["address"],
         status: json["status"],
         houseId: json["houseId"],
-        numberOfRoom: json["numberOfRoom"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -35,6 +32,5 @@ class HouseInfo {
         "address": address,
         "status": status,
         "houseId": houseId,
-        "numberOfRoom": numberOfRoom,
     };
 }

@@ -4,7 +4,7 @@ import 'package:house_management_project/components/TextInput.dart';
 import 'package:house_management_project/components/TextPasswordInput.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/main.dart';
-import 'package:house_management_project/screens/SignInPage.dart';
+import 'package:house_management_project/screens/SignIn/SignInPage.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -16,6 +16,8 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController password = new TextEditingController();
   TextEditingController rePassword = new TextEditingController();
   TextEditingController email = new TextEditingController();
+  TextEditingController phone = new TextEditingController();
+  TextEditingController name = new TextEditingController();
   bool showPass = false;
   bool showRePass = false;
   String showErr = "";
@@ -28,17 +30,18 @@ class _SignUpPageState extends State<SignUpPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 50, horizontal: 40),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/ImageBackground.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
+            padding: EdgeInsets.symmetric(vertical: 40, horizontal: 40),
+            // decoration: BoxDecoration(
+            //   image: DecorationImage(
+            //     image: AssetImage('assets/images/ImageBackground.jpg'),
+            //     fit: BoxFit.cover,
+            //   ),
+            // ),
+            color: Color(0xFFFFF5EE),
             child: Align(
               alignment: Alignment.center,
               child: Container(
-                height: size.height * 0.93,
+                height: size.height,
                 width: size.width * 0.9,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.brown, width: 2),
@@ -124,43 +127,86 @@ class _SignUpPageState extends State<SignUpPage> {
                             hidePass: false,
                             controller: email,
                           ),
-                          Container(
-                            width: size.width * 0.4,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 1,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
+                          TextInput(
+                            text: 'Số điện thoại',
+                            icon: Icon(
+                              MyFlutterApp.phone,
+                              color: Colors.black,
                             ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 15,
-                              ),
-                              child: DropdownButton(
-                                icon: Icon(Icons.arrow_drop_down),
-                                iconSize: 35,
-                                hint: Text('Chọn vai trò'),
-                                isExpanded: true,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
+                            hidePass: false,
+                            controller: phone,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                width: size.width * 0.35,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                value: valueChoose,
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    valueChoose = newValue;
-                                  });
-                                },
-                                items: listItem.map((valueItem) {
-                                  return DropdownMenuItem(
-                                    value: valueItem,
-                                    child: Text(valueItem),
-                                  );
-                                }).toList(),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 15,
+                                  ),
+                                  child: DropdownButton(
+                                    icon: Icon(Icons.arrow_drop_down),
+                                    iconSize: 35,
+                                    hint: Text('Chọn vai trò'),
+                                    isExpanded: true,
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    value: valueChoose,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        valueChoose = newValue;
+                                      });
+                                    },
+                                    items: listItem.map((valueItem) {
+                                      return DropdownMenuItem(
+                                        value: valueItem,
+                                        child: Text(valueItem),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
                               ),
-                            ),
+                              Container(
+                                height: size.height * 0.052,
+                                width: size.width * 0.35,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 5,
+                                        offset: const Offset(0, 5),
+                                      )
+                                    ]),
+                                child: TextFormField(
+                                  obscureText: false,
+                                  controller: name,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    hintText: 'Tên hiển thị',
+                                    hintStyle: TextStyle(
+                                        color: Color(0xFF707070),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18),
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                  ),
+                                ),
+                              ),
+                            ],
                           )
                         ],
                       ),
@@ -280,15 +326,15 @@ class _SignUpPageState extends State<SignUpPage> {
       if (username.text.isEmpty &&
           password.text.isEmpty &&
           rePassword.text.isEmpty &&
-          email.text.isEmpty) {
-        showErr =
-            "Thông tin không được để trống !!!";
+          email.text.isEmpty &&
+          phone.text.isEmpty) {
+        showErr = "Thông tin không được để trống !!!";
       } else if (username.text.isEmpty ||
           password.text.isEmpty ||
           rePassword.text.isEmpty ||
-          email.text.isEmpty) {
-        showErr =
-            "Tên đăng nhập hoặc mật khẩu hoặc Email không được trống !!!";
+          email.text.isEmpty || 
+          phone.text.isEmpty) {
+        showErr = "Tên đăng nhập hoặc mật khẩu hoặc Email hoặc Sđt không được trống !!!";
       } else if (rePassword.text != password.text) {
         showErr = "Xác nhận mật khẩu phải trùng với mật khẩu";
       } else if (valueChoose == null) {
