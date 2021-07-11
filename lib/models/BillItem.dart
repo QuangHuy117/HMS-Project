@@ -26,13 +26,13 @@ class BillItem {
 
   factory BillItem.fromJson(Map<String, dynamic> json) => BillItem(
         id: json["id"],
-        serviceContractId: json["serviceContractId"],
+        serviceContractId: json["serviceContractId"] == null ? null : json['serviceContractId'],
         billId: json["billId"],
-        totalPrice: json["totalPrice"],
+        totalPrice: json["totalPrice"] == null ? null : json['totalPrice'],
         startValue: json["startValue"] == null ? null : json["startValue"],
         endValue: json["endValue"] == null ? null : json["endValue"],
         status: json["status"],
-        serviceContract: ServiceContracts.fromJson(json["serviceContract"]),
+        serviceContract: json["serviceContract"] == null ? null : ServiceContracts.fromJson(json["serviceContract"]),
         clockValueInBillItem: json['clockValueInBillItem'] == null ? null : ClockValueInBillItem.fromJson(json["clockValueInBillItem"]),
     );
 

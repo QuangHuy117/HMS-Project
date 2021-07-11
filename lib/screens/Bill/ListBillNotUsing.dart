@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:house_management_project/models/Bill.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -18,15 +21,17 @@ class _ListBillNotUsingState extends State<ListBillNotUsing> {
   int _price = 0;
   var format = NumberFormat('#,###,000');
   List<bool> _isOpen = [];
-  
 
   getListBill() async {
-    // dynamic token = await FlutterSession().get("token");
+    dynamic token = await FlutterSession().get("token");
     var url = Uri.parse(
         'https://localhost:44322/api/bills?contractId=1&status=false');
     try {
-      var response = await http.get(url, 
-
+      var response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}',
+        },
       );
       if (response.statusCode == 200) {
         setState(() {

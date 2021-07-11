@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 import 'package:house_management_project/components/RoundedButton.dart';
@@ -20,6 +21,8 @@ class _SignInPageState extends State<SignInPage> {
   TextEditingController password = new TextEditingController();
   bool showPass = false;
   String showErr = "";
+  final auth = FirebaseAuth.instance;
+
 
   @override
   Widget build(BuildContext context) {
@@ -183,14 +186,55 @@ class _SignInPageState extends State<SignInPage> {
       } else if (username.text.isEmpty || password.text.isEmpty) {
         showErr = "Tên đăng nhập hoặc mật khẩu không được trống !!!";
       } else {
-        checkSignIn(username.text, password.text);
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => HomePage(username: username.text,)),
-        // );
-      }
+          _signIn(username.text, password.text);
+          // checkSignIn(username.text, password.text);
+        }
     });
   }
+
+  _signIn(String email, String password) async {
+    try {
+      UserCredential user = await auth.signInWithEmailAndPassword(
+          email: email, password: password);
+    var jsonData = null;
+    var url = Uri.parse(
+        'https://localhost:44322/api/accounts/authenticate-firebase');
+    var response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+         'userId': user.user.uid,
+      }),
+    );
+    if (response.statusCode == 200) {
+      jsonData = jsonDecode(response.body);
+      var session = FlutterSession();
+      await session.set("name", jsonData['name']);
+      await session.set("username", jsonData['userId']);
+      await session.set("phone", jsonData['phone']);
+      await session.set("email", jsonData['email']);
+      await session.set("role", jsonData['role']);
+      await session.set("token", jsonData['token']);
+
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
+    
+    }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        if (e.code == 'email-already-in-use') {
+          showErr = 'Email đã tồn tại !!!';
+        } else if (e.code == 'weak-password') {
+          showErr = 'Mật khẩu có ít nhất 6 kí tự !!!';
+        } else if (e.code == 'invalid-email') {
+          showErr = 'Tên đăng nhập phải là email !!!';
+        }
+      });
+    }
+  }
+
+
 
   void checkSignIn(String username, String password) async {
     var jsonData = null;

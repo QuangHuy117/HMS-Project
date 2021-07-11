@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:house_management_project/components/RoundedButton.dart';
 import 'package:house_management_project/components/TextInput.dart';
@@ -5,6 +8,7 @@ import 'package:house_management_project/components/TextPasswordInput.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/main.dart';
 import 'package:house_management_project/screens/SignIn/SignInPage.dart';
+import 'package:http/http.dart' as http;
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -12,7 +16,7 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  TextEditingController username = new TextEditingController();
+  // TextEditingController username = new TextEditingController();
   TextEditingController password = new TextEditingController();
   TextEditingController rePassword = new TextEditingController();
   TextEditingController email = new TextEditingController();
@@ -23,6 +27,8 @@ class _SignUpPageState extends State<SignUpPage> {
   String showErr = "";
   String valueChoose;
   List listItem = ["Chủ trọ", "Người thuê"];
+  final auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -66,14 +72,23 @@ class _SignUpPageState extends State<SignUpPage> {
                       child: Column(
                         children: [
                           TextInput(
-                            text: 'Tên đăng nhập',
+                            text: 'Email',
                             icon: Icon(
-                              MyFlutterApp.user,
+                              MyFlutterApp.mail,
                               color: Colors.black,
                             ),
                             hidePass: false,
-                            controller: username,
+                            controller: email,
                           ),
+                          // TextInput(
+                          //   text: 'Tên đăng nhập',
+                          //   icon: Icon(
+                          //     MyFlutterApp.user,
+                          //     color: Colors.black,
+                          //   ),
+                          //   hidePass: false,
+                          //   controller: username,
+                          // ),
                           TextPasswordInput(
                             text: 'Mật khẩu',
                             icon: Icon(
@@ -117,15 +132,6 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             hidePass: !showRePass,
                             controller: rePassword,
-                          ),
-                          TextInput(
-                            text: 'Email',
-                            icon: Icon(
-                              MyFlutterApp.mail,
-                              color: Colors.black,
-                            ),
-                            hidePass: false,
-                            controller: email,
                           ),
                           TextInput(
                             text: 'Số điện thoại',
@@ -323,28 +329,65 @@ class _SignUpPageState extends State<SignUpPage> {
 
   void onSignUpClicked() {
     setState(() {
-      if (username.text.isEmpty &&
-          password.text.isEmpty &&
+      if (password.text.isEmpty &&
           rePassword.text.isEmpty &&
           email.text.isEmpty &&
-          phone.text.isEmpty) {
+          phone.text.isEmpty &&
+          name.text.isEmpty) {
         showErr = "Thông tin không được để trống !!!";
-      } else if (username.text.isEmpty ||
-          password.text.isEmpty ||
+      } else if (password.text.isEmpty ||
           rePassword.text.isEmpty ||
-          email.text.isEmpty || 
-          phone.text.isEmpty) {
-        showErr = "Tên đăng nhập hoặc mật khẩu hoặc Email hoặc Sđt không được trống !!!";
+          email.text.isEmpty ||
+          phone.text.isEmpty ||
+          name.text.isEmpty) {
+        showErr = "Email hoặc mật khẩu hoặc Sđt hoặc tên không được trống !!!";
       } else if (rePassword.text != password.text) {
         showErr = "Xác nhận mật khẩu phải trùng với mật khẩu";
       } else if (valueChoose == null) {
         showErr = "Vui lòng chọn vai trò";
       } else {
+        _signUp();
+      }
+    });
+  }
+
+  _signUp() async {
+    try {
+      UserCredential user = await auth.createUserWithEmailAndPassword(
+          email: email.text, password: password.text);
+      var url = Uri.parse('https://localhost:44322/api/accounts/register');
+      var response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          'userId': user.user.uid,
+          'password': password.text,
+          'email': email.text,
+          'role': valueChoose,
+          'phone': phone.text,
+          'name': name.text,
+        }),
+      );
+      print(response.statusCode);
+      print(response);
+      if (response.statusCode == 200) {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => SignInPage()),
         );
       }
-    });
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        if (e.code == 'email-already-in-use') {
+          showErr = 'Email đã tồn tại !!!';
+        } else if (e.code == 'weak-password') {
+          showErr = 'Mật khẩu có ít nhất 6 kí tự !!!';
+        } else if (e.code == 'invalid-email') {
+          showErr = 'Tên đăng nhập phải là email !!!';
+        }
+      });
+    }
   }
 }

@@ -1,7 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:path/path.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
+import 'package:house_management_project/api/firebase_api.dart';
 import 'package:house_management_project/main.dart';
 import 'package:house_management_project/models/House.dart';
 import 'package:house_management_project/screens/Profile/UserInfoPage.dart';
@@ -18,43 +23,64 @@ class LandLordProfile extends StatefulWidget {
 }
 
 class _LandLordProfileState extends State<LandLordProfile> {
-  List<House> list = [];
-  int _numberOfRoom = 0;
-  dynamic username, name, email;
+  // List<House> list = [];
+  // int _numberOfRoom = 0;
+  // dynamic username, name, email;
+  // UploadTask task;
+  // File file;
 
-  getHouseData() async {
-    username = await FlutterSession().get("username");
-    name = await FlutterSession().get("name");
-    email = await FlutterSession().get("email");
-    var url = Uri.parse(
-        'https://localhost:44322/api/houses?username=$username');
-    try {
-      var response = await http.get(url);
-      print(response.statusCode);
-      if (response.statusCode == 200) {
-        var items = jsonDecode(response.body);
-        setState(() {
-          for (var u in items) {
-            print(u);
-            House house = new House.fromJson(u);
-            list.add(house);
-          }
-          // for (var i in list) {
-          //   _numberOfRoom += i.houseInfo.numberOfRoom;
-          // }
-        });
-      }
-    } catch (error) {
-      throw (error);
-    }
-  }
+  // getHouseData() async {
+  //   username = await FlutterSession().get("username");
+  //   name = await FlutterSession().get("name");
+  //   email = await FlutterSession().get("email");
+  //   var url = Uri.parse(
+  //       'https://localhost:44322/api/houses?username=$username');
+  //   try {
+  //     var response = await http.get(url);
+  //     print(response.statusCode);
+  //     if (response.statusCode == 200) {
+  //       var items = jsonDecode(response.body);
+  //       setState(() {
+  //         for (var u in items) {
+  //           print(u);
+  //           House house = new House.fromJson(u);
+  //           list.add(house);
+  //         }
+  //         // for (var i in list) {
+  //         //   _numberOfRoom += i.houseInfo.numberOfRoom;
+  //         // }
+  //       });
+  //     }
+  //   } catch (error) {
+  //     throw (error);
+  //   }
+  // }
 
+  
+  
 
-  @override
-  void initState() {
-    super.initState();
-    getHouseData();
-  }
+  // Future uploadFile() async {
+  //   if (file == null) return;
+
+  //   final fileName = basename(file!.path);
+  //   final destination = 'files/$fileName';
+
+  //   task = FirebaseApi.uploadFile(destination, file!);
+  //   setState(() {});
+
+  //   if (task == null) return;
+
+  //   final snapshot = await task!.whenComplete(() {});
+  //   final urlDownload = await snapshot.ref.getDownloadURL();
+
+  //   print('Download-Link: $urlDownload');
+  // }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   getSession();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -154,12 +180,89 @@ class _LandLordProfileState extends State<LandLordProfile> {
         //     ],
         //   ),
         // ),
-        body: setUserForm(name.toString()),
+        body: SetUserForm(),
       ),
     );
   }
 
-  Widget setUserForm(String username) {
+  // Widget setUserForm(String username) {
+  //   return 
+  // }
+}
+
+
+class SetUserForm extends StatefulWidget {
+  const SetUserForm({ Key key }) : super(key: key);
+
+  @override
+  _SetUserFormState createState() => _SetUserFormState();
+}
+
+class _SetUserFormState extends State<SetUserForm> {
+  List<House> list = [];
+  int _numberOfRoom = 0;
+  dynamic username, name, email;
+  UploadTask task;
+  File file;
+  
+  getHouseData() async {
+    username = await FlutterSession().get("username");
+    name = await FlutterSession().get("name");
+    email = await FlutterSession().get("email");
+    var url = Uri.parse(
+        'https://localhost:44322/api/houses?username=$username');
+    try {
+      var response = await http.get(url);
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        var items = jsonDecode(response.body);
+        setState(() {
+          for (var u in items) {
+            print(u);
+            House house = new House.fromJson(u);
+            list.add(house);
+          }
+          // for (var i in list) {
+          //   _numberOfRoom += i.houseInfo.numberOfRoom;
+          // }
+        });
+      }
+    } catch (error) {
+      throw (error);
+    }
+  }
+
+  Future selectFile() async {
+    final result = await FilePicker.platform.pickFiles(allowMultiple: false);
+
+    if (result == null) return;
+    final path = result.files.single.path;
+
+    setState(() => file = File(path));
+    if (file == null) return;
+
+    final fileName = basename(file.path);
+    final destination = 'files/$fileName';
+
+    task = FirebaseApi.uploadFile(destination, file);
+    // setState(() {});
+
+    if (task == null) return;
+
+    final snapshot = await task.whenComplete(() {});
+    final urlDownload = await snapshot.ref.getDownloadURL();
+
+    print('Download-Link: $urlDownload');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getHouseData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(children: <Widget>[
       Container(
           decoration: BoxDecoration(
@@ -350,7 +453,7 @@ class _LandLordProfileState extends State<LandLordProfile> {
                     style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                   Text(
-                    username.contains('null') ? '' : username,
+                    name.toString().contains('null') ? '' : name.toString(),
                     style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w600,
@@ -365,28 +468,27 @@ class _LandLordProfileState extends State<LandLordProfile> {
           ),
         ),
       ),
-      Positioned(
-        top: 20,
-        right: 10,
-        child: CircleAvatar(
-          radius: 25,
-          backgroundImage: AssetImage('assets/images/user.png'),
-          backgroundColor: Colors.transparent,
-        ),
-      )
       // Positioned(
       //   top: 20,
       //   right: 10,
-      //   child: Container(
-      //     child: TextButton(
-      //       child: Text('upload'),
-      //       onPressed: selectFile
-      //   ),
+      //   child: CircleAvatar(
+      //     radius: 25,
+      //     backgroundImage: AssetImage('assets/images/user.png'),
+      //     backgroundColor: Colors.transparent,
       //   ),
       // )
+      Positioned(
+        top: 20,
+        right: 10,
+        child: Container(
+          child: TextButton(
+            child: Text('upload'),
+            onPressed: selectFile
+        ),
+        ),
+      )
     ]);
   }
 }
-
 
  

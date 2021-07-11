@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "360028745180",
-    "project_id": "housemanagement-a586b",
-    "storage_bucket": "housemanagement-a586b.appspot.com"
+    "project_number": "653767200063",
+    "project_id": "hms-project-5d6b1",
+    "storage_bucket": "hms-project-5d6b1.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:360028745180:android:0dd82cc7af3219f4863319",
+        "mobilesdk_app_id": "1:653767200063:android:14028dc84bba71b0d6178a",
         "android_client_info": {
-          "package_name": "com.example.firebase_upload_example"
+          "package_name": "com.example.house_management_project"
         }
       },
       "oauth_client": [
         {
-          "client_id": "360028745180-p0cog0cko6i9lccj84231a1buvpsjn59.apps.googleusercontent.com",
+          "client_id": "653767200063-5cu9tfeia1nbef0c0frahvtrmlqemnqt.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCqB1XqTKB4NfmR61mLOl4HSo6_yEM-CzQ"
+          "current_key": "AIzaSyBOUnY4MomlWzp-8pMw2QNStK-k6Q27FB4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "360028745180-p0cog0cko6i9lccj84231a1buvpsjn59.apps.googleusercontent.com",
+              "client_id": "653767200063-5cu9tfeia1nbef0c0frahvtrmlqemnqt.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

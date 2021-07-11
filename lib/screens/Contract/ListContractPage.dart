@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
@@ -22,12 +23,16 @@ class _ListContractPageState extends State<ListContractPage> {
   List<Contract> listContractNotUsing = [];
 
   getListContract() async {
-    dynamic username = await FlutterSession().get("username");
-    var url = Uri.parse('https://localhost:44322/api/contracts?username=$username');
+    dynamic token = await FlutterSession().get("token");
+    var url = Uri.parse('https://localhost:44322/api/contracts');
     try {
-      var response = await http.get(url);
+      var response = await http.get(url,
+      headers: {
+      HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}',
+    },);
       if (response.statusCode == 200) {
           var items = jsonDecode(response.body);
+          print(items);
           setState(() {
             for (var u in items) {
               Contract contract = new Contract.fromJson(u);

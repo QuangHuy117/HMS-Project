@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/main.dart';
 import 'package:house_management_project/models/ServiceContracts.dart';
@@ -64,6 +67,7 @@ class _RoomServicesPageState extends State<RoomServicesPage> {
 
   sendServiceRoomData(
       int conId, String startDate, String endDate, List createBillItems) async {
+    dynamic token = await FlutterSession().get("token");
     var jsonData = null;
     var url = Uri.parse('https://localhost:44322/api/bills');
     try {
@@ -71,6 +75,7 @@ class _RoomServicesPageState extends State<RoomServicesPage> {
         url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}'
         },
         body: jsonEncode({
           "contractId": conId,

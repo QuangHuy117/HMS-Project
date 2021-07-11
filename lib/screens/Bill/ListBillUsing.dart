@@ -24,7 +24,6 @@ class _ListBillUsingState extends State<ListBillUsing> {
 
   getListBill() async {
     dynamic token = await FlutterSession().get("token");
-    // dynamic username = await FlutterSession().get("username");
     var url = Uri.parse(
         'https://localhost:44322/api/bills?contractId=1&status=true');
     try {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
-import 'package:house_management_project/screens/Bill/ListBillPage.dart';
 import 'package:house_management_project/screens/Contract/ListContractPage.dart';
 import 'package:house_management_project/screens/NotificationPage.dart';
 import 'package:house_management_project/screens/Profile/LandLordProfile.dart';
@@ -38,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     //  Account account = Provider.of<Account>(context);
     final tabs = [
       ListHouseView(),
-      ListBillPage(),
+      // ListBillPage(),
       ListContractPage(),
       NotificationPage(),
       LandLordProfile(),

@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:house_management_project/screens/SignIn/SignInPage.dart';
 
 
@@ -12,8 +14,15 @@ class MyHttpOverrides extends HttpOverrides{
 }
 
 
-void main() {
+Future main() async {
   HttpOverrides.global = new MyHttpOverrides();
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
