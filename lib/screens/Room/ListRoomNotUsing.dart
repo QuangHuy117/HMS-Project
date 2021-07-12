@@ -5,12 +5,11 @@ import 'package:house_management_project/models/Room.dart';
 import 'package:house_management_project/screens/Bill/BillHistoryPage.dart';
 import 'package:house_management_project/screens/Room/RoomSettingPage.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class ListRoomNotUsing extends StatefulWidget {
-  final List<Room> list;
   final String houseId;
-  const ListRoomNotUsing({ Key key , 
-  @required this.list, 
+  const ListRoomNotUsing({ Key key ,
   @required this.houseId,}) : super(key: key);
 
   @override
@@ -18,6 +17,30 @@ class ListRoomNotUsing extends StatefulWidget {
 }
 
 class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
+
+  List<Room> listRoom = [];
+
+  getRoomsByHouseId() async {
+    var url = Uri.parse(
+        'https://localhost:44322/api/rooms?HouseId=${widget.houseId}&Status=false');
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        setState(() {
+          listRoom = roomFromJson(response.body);
+        });
+      }
+    } catch (error) {
+      throw (error);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getRoomsByHouseId();
+  }
+  
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -76,7 +99,7 @@ class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
                                       fontWeight: FontWeight.w700),
                                 ),
                                 Text(
-                                  '${widget.list[index].name}',
+                                  '${listRoom[index].name}',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -96,7 +119,7 @@ class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
                                       fontWeight: FontWeight.w700),
                                 ),
                                 Text(
-                                  '${widget.list[index].contract == null ? 'Trống' : widget.list[index].contract.tenant.name}',
+                                  '${listRoom[index].contract == null ? 'Trống' : listRoom[index].contract.tenant.name}',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -116,7 +139,7 @@ class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
                                       fontWeight: FontWeight.w700),
                                 ),
                                 Text(
-                                  '${widget.list[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(widget.list[index].contract.startDate)}',
+                                  '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.startDate)}',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -136,7 +159,7 @@ class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
                                       fontWeight: FontWeight.w700),
                                 ),
                                 Text(
-                                  '${widget.list[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(widget.list[index].contract.endDate)}',
+                                  '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.endDate)}',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -189,7 +212,7 @@ class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     RoomSettingPage(
-                                                      roomId: widget.list[index].id,
+                                                      roomId: listRoom[index].id,
                                                       houseId: widget.houseId,
                                                     )));
                                       },
@@ -230,7 +253,7 @@ class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
                                         ],
                                       ),
                                       onPressed: () {
-                                        Navigator.push(context, MaterialPageRoute(builder: (_) => BillHistoryPage(contractId: widget.list[index].contract.id,)));
+                                        Navigator.push(context, MaterialPageRoute(builder: (_) => BillHistoryPage(contractId: listRoom[index].contract.id,)));
                                       },
                                     ),
                                   ),
@@ -245,9 +268,9 @@ class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
                       top: 10,
                       right: 10,
                       child: Text(
-                        '${widget.list[index].status ? '' : 'Chưa thuê'}',
+                        '${listRoom[index].status ? '' : 'Chưa thuê'}',
                         style: TextStyle(
-                          color: widget.list[index].status
+                          color: listRoom[index].status
                               ? PrimaryColor
                               : Color(0xFF707070),
                           fontSize: 20,
@@ -260,7 +283,7 @@ class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
               ),
             );
           },
-          itemCount: widget.list.length,
+          itemCount: listRoom.length,
         ),
       ),
     );

@@ -24,56 +24,7 @@ class _ListHouseViewState extends State<ListHouseView> {
   TextEditingController name = new TextEditingController();
   TextEditingController address = new TextEditingController();
   String showErr = "";
-  List<House> listHouseUsing = [];
-  List<House> listHouseNotUsing = [];
-  List<House> list = [];
 
-  getHouseData() async {
-    dynamic token = await FlutterSession().get("token");
-    // Account account = Provider.of<Account>(context, listen: false);
-    // print(token.toString());
-    var url = Uri.parse(
-        'https://localhost:44322/api/houses');
-    try {
-      var response = await http.get(url, 
-     headers: {
-      HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}',
-    },
-      );
-
-      print(response.statusCode);
-      if (response.statusCode == 200) {
-        var items = jsonDecode(response.body);
-        setState(() {
-          for (var u in items) {
-            // print(u);
-            House house = new House.fromJson(u);
-            list.add(house);
-          }
-          getListHouseSeperate(list);
-        });
-      }
-    } catch (error) {
-      throw (error);
-    }
-  }
-
-  getListHouseSeperate(List<House> listHouse) {
-    print(list);
-    for (var u in listHouse) {
-      if (u.status == true) {
-        listHouseUsing.add(u);
-      } else {
-        listHouseNotUsing.add(u);
-      }
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getHouseData();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -241,8 +192,8 @@ class _ListHouseViewState extends State<ListHouseView> {
             ),
             body: TabBarView(
               children: [
-                ListHouseUsing(list: listHouseUsing),
-                ListHouseNotUsing(list: listHouseNotUsing),
+                ListHouseUsing(),
+                ListHouseNotUsing(),
               ],
             )),
       ),

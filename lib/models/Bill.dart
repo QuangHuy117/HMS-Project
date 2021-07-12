@@ -14,6 +14,7 @@ class Bill {
   DateTime issueDate;
   DateTime startDate;
   DateTime endDate;
+  int totalPrice;
   bool status;
   String note;
   bool isDeleted;
@@ -29,6 +30,7 @@ class Bill {
     this.issueDate,
     this.startDate,
     this.endDate,
+    this.totalPrice,
     this.status,
     this.note,
     this.isDeleted,
@@ -45,6 +47,7 @@ class Bill {
         issueDate: DateTime.parse(json['issueDate']),
         startDate: DateTime.parse(json['startDate']),
         endDate: DateTime.parse(json['endDate']),
+        totalPrice: json['totalPrice'] == null ? null : json['totalPrice'],
         status: json['status'],
         note: json['note'] == null ? null : json['note'],
         isDeleted: json['isDeleted'],
@@ -61,6 +64,7 @@ class Bill {
         "issueDate": issueDate.toIso8601String(),
         "startDate": startDate.toIso8601String(),
         "endDate": endDate.toIso8601String(),
+        "totalPrice": totalPrice,
         "status": status,
         "note": note,
         "isDeleted": isDeleted,

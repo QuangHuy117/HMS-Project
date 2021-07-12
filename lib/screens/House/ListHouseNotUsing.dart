@@ -1,4 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/main.dart';
 import 'package:house_management_project/models/House.dart';
@@ -6,14 +11,50 @@ import 'package:house_management_project/screens/House/HouseSettingPage.dart';
 import 'package:house_management_project/screens/Room/RoomNavigationBar.dart';
 
 class ListHouseNotUsing extends StatefulWidget {
-  final List<House> list;
-  const ListHouseNotUsing({ Key key , @required this.list}) : super(key: key);
+  const ListHouseNotUsing({ Key key}) : super(key: key);
 
   @override
   _ListHouseNotUsingState createState() => _ListHouseNotUsingState();
 }
 
 class _ListHouseNotUsingState extends State<ListHouseNotUsing> {
+
+  List<House> listHouse = [];
+
+  getHouseData() async {
+    dynamic token = await FlutterSession().get("token");
+    // print(token.toString());
+    var url = Uri.parse(
+        'https://localhost:44322/api/houses?Status=false');
+    try {
+      var response = await http.get(url, 
+     headers: {
+      HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}',
+    },
+      );
+
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        var items = jsonDecode(response.body);
+        setState(() {
+          for (var u in items) {
+            // print(u);
+            House house = new House.fromJson(u);
+            listHouse.add(house);
+          }
+        });
+      }
+    } catch (error) {
+      throw (error);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getHouseData();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -38,7 +79,7 @@ class _ListHouseNotUsingState extends State<ListHouseNotUsing> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => RoomNavigationBar(
-                              houseId: widget.list[index].id,
+                              houseId: listHouse[index].id,
                               )),
                     );
                   },
@@ -71,7 +112,7 @@ class _ListHouseNotUsingState extends State<ListHouseNotUsing> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '${widget.list[index].houseInfo.name}',
+                                  '${listHouse[index].houseInfo.name}',
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700,
@@ -81,7 +122,7 @@ class _ListHouseNotUsingState extends State<ListHouseNotUsing> {
                                   height: 5,
                                 ),
                                 Text(
-                                  '${widget.list[index].houseInfo.address}',
+                                  '${listHouse[index].houseInfo.address}',
                                   style: TextStyle(
                                     fontSize: 16,
                                   ),
@@ -94,9 +135,9 @@ class _ListHouseNotUsingState extends State<ListHouseNotUsing> {
                           top: 15,
                           right: 10,
                           child: Text(
-                            '${widget.list[index].status ? '' : 'Chưa thuê'}',
+                            '${listHouse[index].status ? '' : 'Chưa thuê'}',
                             style: TextStyle(
-                              color: widget.list[index].status
+                              color: listHouse[index].status
                                   ? PrimaryColor
                                   : Color(0xFF707070),
                               fontSize: 20,
@@ -113,7 +154,7 @@ class _ListHouseNotUsingState extends State<ListHouseNotUsing> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => HouseSettingPage(
-                                        houseId: widget.list[index].id)),
+                                        houseId: listHouse[index].id)),
                               );
                             },
                             child: Icon(
@@ -129,7 +170,7 @@ class _ListHouseNotUsingState extends State<ListHouseNotUsing> {
                 ),
               );
             },
-            itemCount: widget.list.length,
+            itemCount: listHouse.length,
           ),
       ),
     );

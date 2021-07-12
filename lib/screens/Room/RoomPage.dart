@@ -22,38 +22,16 @@ class _RoomPageState extends State<RoomPage> {
   List<Room> listRoomUsing = [];
   List<Room> listRoomNotUsing = [];
 
-  getRoomsByHouseId() async {
-    var url = Uri.parse(
-        'https://localhost:44322/api/rooms?houseId=${widget.houseId}');
-    try {
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        setState(() {
-          listRoom = roomFromJson(response.body);
-          getListRoomSeparate(listRoom);
-          print(listRoom);
-        });
-      }
-    } catch (error) {
-      throw (error);
-    }
-  }
 
-  getListRoomSeparate(List<Room> listRoomSeparate) {
-    for (var u in listRoomSeparate) {
-      if (u.status == true) {
-        listRoomUsing.add(u);
-      } else {
-        listRoomNotUsing.add(u);
-      }
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getRoomsByHouseId();
-  }
+  // getListRoomSeparate(List<Room> listRoomSeparate) {
+  //   for (var u in listRoomSeparate) {
+  //     if (u.status == true) {
+  //       listRoomUsing.add(u);
+  //     } else {
+  //       listRoomNotUsing.add(u);
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -126,11 +104,9 @@ class _RoomPageState extends State<RoomPage> {
             body: TabBarView(
               children: [
                 ListRoomUsing(
-                  list: listRoomUsing,
                   houseId: widget.houseId,
                 ),
                 ListRoomNotUsing(
-                  list: listRoomNotUsing,
                   houseId: widget.houseId,
                 ),
               ],

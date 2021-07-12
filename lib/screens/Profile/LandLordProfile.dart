@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:house_management_project/models/Room.dart';
 import 'package:path/path.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -23,208 +24,116 @@ class LandLordProfile extends StatefulWidget {
 }
 
 class _LandLordProfileState extends State<LandLordProfile> {
-  // List<House> list = [];
-  // int _numberOfRoom = 0;
-  // dynamic username, name, email;
-  // UploadTask task;
-  // File file;
-
-  // getHouseData() async {
-  //   username = await FlutterSession().get("username");
-  //   name = await FlutterSession().get("name");
-  //   email = await FlutterSession().get("email");
-  //   var url = Uri.parse(
-  //       'https://localhost:44322/api/houses?username=$username');
-  //   try {
-  //     var response = await http.get(url);
-  //     print(response.statusCode);
-  //     if (response.statusCode == 200) {
-  //       var items = jsonDecode(response.body);
-  //       setState(() {
-  //         for (var u in items) {
-  //           print(u);
-  //           House house = new House.fromJson(u);
-  //           list.add(house);
-  //         }
-  //         // for (var i in list) {
-  //         //   _numberOfRoom += i.houseInfo.numberOfRoom;
-  //         // }
-  //       });
-  //     }
-  //   } catch (error) {
-  //     throw (error);
-  //   }
-  // }
-
-  
-  
-
-  // Future uploadFile() async {
-  //   if (file == null) return;
-
-  //   final fileName = basename(file!.path);
-  //   final destination = 'files/$fileName';
-
-  //   task = FirebaseApi.uploadFile(destination, file!);
-  //   setState(() {});
-
-  //   if (task == null) return;
-
-  //   final snapshot = await task!.whenComplete(() {});
-  //   final urlDownload = await snapshot.ref.getDownloadURL();
-
-  //   print('Download-Link: $urlDownload');
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   getSession();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        // endDrawer: new Drawer(
-        //   child: ListView(
-        //     children: [
-        //       new UserAccountsDrawerHeader(
-        //         accountName: Text(
-        //           widget.name,
-        //           style: TextStyle(fontSize: 18),
-        //         ),
-        //         accountEmail:
-        //             Text(widget.email, style: TextStyle(fontSize: 16)),
-        //         currentAccountPicture: new CircleAvatar(
-        //           backgroundImage: AssetImage('assets/images/user.png'),
-        //           backgroundColor: Colors.white,
-        //         ),
-        //       ),
-        //       ListTile(
-        //         leading: Icon(MyFlutterApp.clipboard),
-        //         title: Text(
-        //           'Thông tin',
-        //           style: TextStyle(fontSize: 18),
-        //         ),
-        //         onTap: () {
-        //           print('About Page');
-        //         },
-        //       ),
-        //       ListTile(
-        //         leading: Icon(MyFlutterApp.phone),
-        //         title: Text(
-        //           'Liên hệ',
-        //           style: TextStyle(fontSize: 18),
-        //         ),
-        //         subtitle: Text(
-        //           '0902923542',
-        //           style: TextStyle(fontSize: 16),
-        //         ),
-        //         onTap: () {
-        //           print('About Page');
-        //         },
-        //       ),
-        //       ListTile(
-        //         leading: Icon(MyFlutterApp.mail),
-        //         title: Text(
-        //           'Email',
-        //           style: TextStyle(fontSize: 18),
-        //         ),
-        //         subtitle: Text(
-        //           'admin@gmail.com',
-        //           style: TextStyle(fontSize: 16),
-        //         ),
-        //         onTap: () {
-        //           print('About Page');
-        //         },
-        //       ),
-        //       Divider(
-        //         color: Colors.black,
-        //         height: 10,
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.star),
-        //         title: Text(
-        //           'Đánh giá',
-        //           style: TextStyle(fontSize: 18),
-        //         ),
-        //         onTap: () {
-        //           print('About Page');
-        //         },
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.help),
-        //         title: Text(
-        //           'Trợ giúp',
-        //           style: TextStyle(fontSize: 18),
-        //         ),
-        //         onTap: () {
-        //           print('About Page');
-        //         },
-        //       ),
-        //       Divider(
-        //         color: Colors.black,
-        //         height: 10,
-        //       ),
-        //       ListTile(
-        //         leading: Icon(Icons.logout),
-        //         title: Text(
-        //           'Đăng xuất',
-        //           style: TextStyle(fontSize: 18),
-        //         ),
-        //         onTap: () {
-
-        //         },
-        //       ),
-        //     ],
-        //   ),
-        // ),
         body: SetUserForm(),
       ),
     );
   }
 
   // Widget setUserForm(String username) {
-  //   return 
+  //   return
   // }
 }
 
-
 class SetUserForm extends StatefulWidget {
-  const SetUserForm({ Key key }) : super(key: key);
+  const SetUserForm({Key key}) : super(key: key);
 
   @override
   _SetUserFormState createState() => _SetUserFormState();
 }
 
 class _SetUserFormState extends State<SetUserForm> {
-  List<House> list = [];
+  List<House> listHouse = [];
+  List<Room> listRoom = [];
+  List<Room> listRoomUsing = [];
+  List<Room> listRoomNotUsing = [];
+  int _numberOfHouse = 0;
   int _numberOfRoom = 0;
-  dynamic username, name, email;
   UploadTask task;
   File file;
-  
-  getHouseData() async {
-    username = await FlutterSession().get("username");
+  dynamic name, image;
+
+  // String token =
+  // 'https://firebasestorage.googleapis.com/v0/b/hms-project-5d6b1.appspot.com/o/files%2F205558665_949919552234828_8681075534449186613_n.jpg?alt=media&token=3e6351f0-915f-4b07-9cfd-d5e6540fed68';
+
+  countHouse() async {
     name = await FlutterSession().get("name");
-    email = await FlutterSession().get("email");
-    var url = Uri.parse(
-        'https://localhost:44322/api/houses?username=$username');
+    image = await FlutterSession().get("image");
+    dynamic token = await FlutterSession().get("token");
+    var url = Uri.parse('https://localhost:44322/api/houses/count');
     try {
-      var response = await http.get(url);
+      var response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}',
+        },
+      );
       print(response.statusCode);
       if (response.statusCode == 200) {
-        var items = jsonDecode(response.body);
         setState(() {
-          for (var u in items) {
-            print(u);
-            House house = new House.fromJson(u);
-            list.add(house);
+          _numberOfHouse = int.parse(response.body);
+        });
+      }
+    } catch (error) {
+      throw (error);
+    }
+  }
+
+  getHouseData() async {
+    dynamic token = await FlutterSession().get("token");
+    var url = Uri.parse('https://localhost:44322/api/houses');
+    try {
+      var response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}',
+        },
+      );
+      if (response.statusCode == 200) {
+        setState(() {
+          listHouse = houseFromJson(response.body);
+          for (var i in listHouse) {
+            countRoom(i.id);
+            countRoomSeperate(i.id);
           }
-          // for (var i in list) {
-          //   _numberOfRoom += i.houseInfo.numberOfRoom;
-          // }
+        });
+      }
+    } catch (error) {
+      throw (error);
+    }
+  }
+
+  countRoom(String id) async {
+    var url = Uri.parse('https://localhost:44322/api/rooms/count?HouseId=$id');
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        setState(() {
+          _numberOfRoom += int.parse(response.body);
+        });
+      }
+    } catch (error) {
+      throw (error);
+    }
+  }
+
+  countRoomSeperate(String id) async {
+    var url = Uri.parse('https://localhost:44322/api/rooms?HouseId=$id');
+    try {
+      var response = await http.get(url);
+      if (response.statusCode == 200) {
+        setState(() {
+          listRoom = roomFromJson(response.body);
+          for (var i in listRoom) {
+            if (i.status == true) {
+              listRoomUsing.add(i);
+            } else {
+              listRoomNotUsing.add(i);
+            }
+          }
         });
       }
     } catch (error) {
@@ -258,6 +167,7 @@ class _SetUserFormState extends State<SetUserForm> {
   @override
   void initState() {
     super.initState();
+    countHouse();
     getHouseData();
   }
 
@@ -278,13 +188,13 @@ class _SetUserFormState extends State<SetUserForm> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.25,
+              height: MediaQuery.of(context).size.height * 0.26,
               child: Card(
                   elevation: 20.0,
                   margin: EdgeInsets.only(left: 25.0, right: 25.0, top: 100.0),
                   child: ListView(
                       padding: EdgeInsets.only(
-                          top: 15.0, left: 20.0, right: 20.0, bottom: 5.0),
+                          top: 15.0, left: 20.0, right: 20.0, bottom: 15.0),
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -303,7 +213,7 @@ class _SetUserFormState extends State<SetUserForm> {
                                     height: 10,
                                   ),
                                   Text(
-                                    list.length.toString(),
+                                    _numberOfHouse.toString(),
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600),
@@ -335,15 +245,63 @@ class _SetUserFormState extends State<SetUserForm> {
                             ),
                           ],
                         ),
-                        Row(),
+                        SizedBox(height: 10,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Số phòng đang thuê',
+                                    style: TextStyle(
+                                        fontSize: 19,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    listRoomUsing.length.toString(),
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Số phòng chưa thuê',
+                                    style: TextStyle(
+                                        fontSize: 19,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    listRoomNotUsing.length.toString(),
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ])),
             ),
             SizedBox(
               height: 30,
             ),
             Container(
+              margin: EdgeInsets.only(top: 20),
               color: Colors.white,
-              height: MediaQuery.of(context).size.height * 0.63,
+              height: MediaQuery.of(context).size.height * 0.45,
               child: Column(
                 children: [
                   ListTile(
@@ -369,6 +327,11 @@ class _SetUserFormState extends State<SetUserForm> {
                     ),
                     title: Text('Liên hệ'),
                     trailing: Icon(Icons.arrow_forward_ios_outlined),
+                    onTap: () {
+                      // var test = token.split("&");
+                      // var demo = test[1].split("=");
+                      // print(demo[1]);
+                    },
                   ),
                   Divider(
                     color: Colors.grey,
@@ -468,27 +431,26 @@ class _SetUserFormState extends State<SetUserForm> {
           ),
         ),
       ),
-      // Positioned(
-      //   top: 20,
-      //   right: 10,
-      //   child: CircleAvatar(
-      //     radius: 25,
-      //     backgroundImage: AssetImage('assets/images/user.png'),
-      //     backgroundColor: Colors.transparent,
-      //   ),
-      // )
       Positioned(
         top: 20,
         right: 10,
-        child: Container(
-          child: TextButton(
-            child: Text('upload'),
-            onPressed: selectFile
-        ),
+        child: GestureDetector(
+          child: CircleAvatar(
+            radius: 25,
+            // backgroundImage: image == null ? AssetImage('assets/images/user.png') : image,
+            backgroundImage: AssetImage('assets/images/user.png'),
+            backgroundColor: Colors.transparent,
+          ),
+          onTap: selectFile,
         ),
       )
+      // Positioned(
+      //   top: 20,
+      //   right: 10,
+      //   child: Container(
+      //     child: TextButton(child: Text('upload'), onPressed: selectFile),
+      //   ),
+      // )
     ]);
   }
 }
-
- 

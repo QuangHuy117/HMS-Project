@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:house_management_project/components/RoundedButton.dart';
 import 'package:house_management_project/components/TextInput.dart';
 import 'package:house_management_project/components/TextPasswordInput.dart';
@@ -22,7 +23,7 @@ class _SignInPageState extends State<SignInPage> {
   bool showPass = false;
   String showErr = "";
   final auth = FirebaseAuth.instance;
-
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   @override
   Widget build(BuildContext context) {
@@ -167,8 +168,16 @@ class _SignInPageState extends State<SignInPage> {
                             );
                           },
                         ),
+                        TextButton(
+                          onPressed: () => signInWithGoogle(),
+                          child: Text('GG'),
+                        ),
                       ],
                     ),
+                  ),
+                  TextButton(
+                    onPressed: () => signOut(),
+                    child: Text('SO'),
                   ),
                 ],
               ),
@@ -186,60 +195,92 @@ class _SignInPageState extends State<SignInPage> {
       } else if (username.text.isEmpty || password.text.isEmpty) {
         showErr = "Tên đăng nhập hoặc mật khẩu không được trống !!!";
       } else {
-          _signIn(username.text, password.text);
-          // checkSignIn(username.text, password.text);
-        }
+        _signIn(username.text, password.text);
+        // checkSignIn(username.text, password.text);
+      }
     });
+  }
+
+  Future<void> signOut() async {
+    await auth.signOut();
+    await googleSignIn.signOut();  
+
+    User user = auth.currentUser;
+    if (user != null){
+
+    } else {
+
+    }
+    print(user);
+  }
+
+  Future<void> signInWithGoogle() async {
+    GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
+    AuthCredential authCredential = GoogleAuthProvider.credential(
+        idToken: googleSignInAuthentication.idToken,
+        accessToken: googleSignInAuthentication.accessToken);
+
+    // ignore: unused_local_variable
+    UserCredential authResult = await auth.signInWithCredential(authCredential);
+    User user = auth.currentUser;
+    print(authResult);
+    print(user); 
   }
 
   _signIn(String email, String password) async {
     try {
       UserCredential user = await auth.signInWithEmailAndPassword(
           email: email, password: password);
-    var jsonData = null;
-    var url = Uri.parse(
-        'https://localhost:44322/api/accounts/authenticate-firebase');
-    var response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
-         'userId': user.user.uid,
-      }),
-    );
-    if (response.statusCode == 200) {
-      jsonData = jsonDecode(response.body);
-      var session = FlutterSession();
-      await session.set("name", jsonData['name']);
-      await session.set("username", jsonData['userId']);
-      await session.set("phone", jsonData['phone']);
-      await session.set("email", jsonData['email']);
-      await session.set("role", jsonData['role']);
-      await session.set("token", jsonData['token']);
+      var jsonData = null;
+      var url = Uri.parse(
+          'https://localhost:44322/api/accounts/authenticate-firebase');
+      var response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          'userId': user.user.uid,
+        }),
+      );
+      if (response.statusCode == 200) {
+        jsonData = jsonDecode(response.body);
 
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
-    
-    }
+        // var image = jsonData['image'] == null ? 'null' : jsonData['image'];
+        var session = FlutterSession();
+        await session.set("name", jsonData['name']);
+        await session.set("username", jsonData['userId']);
+        await session.set("phone", jsonData['phone']);
+        await session.set("email", jsonData['email']);
+        // await session.set("image", image);
+        await session.set("role", jsonData['role']);
+        await session.set("token", jsonData['token']);
+
+        Navigator.pushAndRemoveUntil(context,
+            MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
+      }
     } on FirebaseAuthException catch (e) {
+      print(e.code);
       setState(() {
-        if (e.code == 'email-already-in-use') {
-          showErr = 'Email đã tồn tại !!!';
-        } else if (e.code == 'weak-password') {
-          showErr = 'Mật khẩu có ít nhất 6 kí tự !!!';
-        } else if (e.code == 'invalid-email') {
-          showErr = 'Tên đăng nhập phải là email !!!';
+        if (e.code == 'invalid-email') {
+          showErr = 'Tên đăng nhập phải là Email !!!';
+        } else if (e.code == 'user-not-found') {
+          showErr = 'Email không tồn tại !!!';
+        } else if (e.code == 'wrong-password') {
+          showErr = 'Sai mật khẩu !!!';
+        } else if (e.code == 'too-many-requests') {
+          showErr = 'Đăng nhập sai nhiều lần vui lòng thử lại sau !!!';
         }
       });
     }
   }
 
-
-
   void checkSignIn(String username, String password) async {
     var jsonData = null;
-    var url = Uri.parse(
-        'https://localhost:44322/api/accounts/authenticate');
+    var url = Uri.parse('https://localhost:44322/api/accounts/authenticate');
     var response = await http.post(
       url,
       headers: <String, String>{
@@ -263,14 +304,14 @@ class _SignInPageState extends State<SignInPage> {
       await session.set("role", jsonData['response']['role']);
       await session.set("token", jsonData['response']['token']);
       setState(() {
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
+        Navigator.pushAndRemoveUntil(context,
+            MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
         //  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => AccountProvider(account: jsonData,)), (route) => false);
       });
     } else {
       setState(() {
-         showErr = "Sai tên đăng nhập hoặc tài khoản";
+        showErr = "Sai tên đăng nhập hoặc tài khoản";
       });
-     
     }
   }
 }

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "653767200063-b6dc1khtstl45r64243ojnd7e6jhttm5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.house_management_project",
+            "certificate_hash": "dc8fffb0c5c670e02f0dbb3ba10897393f7393ae"
+          }
+        },
+        {
           "client_id": "653767200063-5cu9tfeia1nbef0c0frahvtrmlqemnqt.apps.googleusercontent.com",
           "client_type": 3
         }
