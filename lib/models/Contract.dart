@@ -32,7 +32,7 @@ class Contract {
         startDate: DateTime.parse(json['startDate']),
         endDate: DateTime.parse(json['endDate']),
         status: json['status'],
-        tenant: TenantUsernameNavigation.fromJson(json['tenantUser']),
+        tenant: json['tenantUser'] == null ? null : TenantUsernameNavigation.fromJson(json['tenantUser']),
         serviceContracts: json['serviceContracts'] == null ? null : List<ServiceContracts>.from(json["serviceContracts"].map((x) => ServiceContracts.fromJson(x)))
       );
 

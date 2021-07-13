@@ -1,6 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:house_management_project/models/Room.dart';
 import 'package:path/path.dart';
 import 'package:file_picker/file_picker.dart';
@@ -32,10 +33,6 @@ class _LandLordProfileState extends State<LandLordProfile> {
       ),
     );
   }
-
-  // Widget setUserForm(String username) {
-  //   return
-  // }
 }
 
 class SetUserForm extends StatefulWidget {
@@ -55,6 +52,8 @@ class _SetUserFormState extends State<SetUserForm> {
   UploadTask task;
   File file;
   dynamic name, image;
+  final auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   // String token =
   // 'https://firebasestorage.googleapis.com/v0/b/hms-project-5d6b1.appspot.com/o/files%2F205558665_949919552234828_8681075534449186613_n.jpg?alt=media&token=3e6351f0-915f-4b07-9cfd-d5e6540fed68';
@@ -188,10 +187,15 @@ class _SetUserFormState extends State<SetUserForm> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.26,
+              alignment: Alignment.bottomCenter,
+              height: MediaQuery.of(context).size.height * 0.35,
               child: Card(
                   elevation: 20.0,
-                  margin: EdgeInsets.only(left: 25.0, right: 25.0, top: 100.0),
+                  margin: EdgeInsets.only(
+                    left: 25.0,
+                    right: 25.0,
+                    top: 170.0,
+                  ),
                   child: ListView(
                       padding: EdgeInsets.only(
                           top: 15.0, left: 20.0, right: 20.0, bottom: 15.0),
@@ -245,7 +249,18 @@ class _SetUserFormState extends State<SetUserForm> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 10,),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Divider(
+                          color: Colors.grey,
+                          indent: 50,
+                          endIndent: 50,
+                          thickness: 1,
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -253,7 +268,7 @@ class _SetUserFormState extends State<SetUserForm> {
                               child: Column(
                                 children: [
                                   Text(
-                                    'Số phòng đang thuê',
+                                    'Phòng đang thuê',
                                     style: TextStyle(
                                         fontSize: 19,
                                         fontWeight: FontWeight.w600),
@@ -274,7 +289,7 @@ class _SetUserFormState extends State<SetUserForm> {
                               child: Column(
                                 children: [
                                   Text(
-                                    'Số phòng chưa thuê',
+                                    'Phòng chưa thuê',
                                     style: TextStyle(
                                         fontSize: 19,
                                         fontWeight: FontWeight.w600),
@@ -374,19 +389,13 @@ class _SetUserFormState extends State<SetUserForm> {
                     thickness: 10,
                   ),
                   ListTile(
-                    leading: Icon(
-                      Icons.logout,
-                      size: 28,
-                    ),
-                    title: Text('Đăng xuất'),
-                    trailing: Icon(Icons.arrow_forward_ios_outlined),
-                    onTap: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (_) => SignInPage()),
-                          (route) => false);
-                    },
-                  ),
+                      leading: Icon(
+                        Icons.logout,
+                        size: 28,
+                      ),
+                      title: Text('Đăng xuất'),
+                      trailing: Icon(Icons.arrow_forward_ios_outlined),
+                      onTap: () => signOut(context)),
                   Divider(
                     color: Colors.grey,
                     thickness: 1,
@@ -398,22 +407,38 @@ class _SetUserFormState extends State<SetUserForm> {
         ),
       ),
       Positioned(
-        top: 20,
-        left: 5,
-        right: 0,
-        child: AppBar(
-          automaticallyImplyLeading: false,
-          iconTheme: IconThemeData(color: Colors.white),
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          title: Row(
+          top: 20,
+          right: 10,
+          left: 10,
+          child: Column(
             children: [
+              GestureDetector(
+                child: Container(
+                  child: CircleAvatar(
+                    radius: (45),
+                    backgroundColor: Colors.white,
+                    // backgroundImage: NetworkImage('$image',),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: Image.network(
+                        '$image',
+                        width: 70,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+                onTap: selectFile,
+              ),
+              SizedBox(
+                height: 5,
+              ),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     'Xin chào,',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   Text(
                     name.toString().contains('null') ? '' : name.toString(),
@@ -424,33 +449,17 @@ class _SetUserFormState extends State<SetUserForm> {
                   ),
                 ],
               ),
-              // SizedBox(
-              //   width: 40,
-              // ),
             ],
-          ),
-        ),
-      ),
-      Positioned(
-        top: 20,
-        right: 10,
-        child: GestureDetector(
-          child: CircleAvatar(
-            radius: 25,
-            // backgroundImage: image == null ? AssetImage('assets/images/user.png') : image,
-            backgroundImage: AssetImage('assets/images/user.png'),
-            backgroundColor: Colors.transparent,
-          ),
-          onTap: selectFile,
-        ),
-      )
-      // Positioned(
-      //   top: 20,
-      //   right: 10,
-      //   child: Container(
-      //     child: TextButton(child: Text('upload'), onPressed: selectFile),
-      //   ),
-      // )
+          )),
     ]);
+  }
+
+  Future<void> signOut(BuildContext context) async {
+    await auth.signOut();
+    await googleSignIn.signOut();
+    User user = auth.currentUser;
+    print(user);
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (_) => SignInPage()), (route) => false);
   }
 }

@@ -7,6 +7,7 @@ import 'package:house_management_project/components/TextInput.dart';
 import 'package:house_management_project/components/TextPasswordInput.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/main.dart';
+import 'package:house_management_project/screens/ForgotPasswordPage.dart';
 import 'package:house_management_project/screens/HomePage.dart';
 import 'package:house_management_project/screens/SignUp/SignUpPage.dart';
 import 'package:http/http.dart' as http;
@@ -41,7 +42,8 @@ class _SignInPageState extends State<SignInPage> {
             // ),
             color: Color(0xFFFFF5EE),
             child: Container(
-              height: size.height * 0.78,
+              padding: EdgeInsets.symmetric(vertical: 10),
+              height: size.height * 0.8,
               width: size.width * 0.9,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.brown, width: 2),
@@ -53,7 +55,7 @@ class _SignInPageState extends State<SignInPage> {
                 children: [
                   Container(
                     margin: EdgeInsets.only(
-                      bottom: 30,
+                      bottom: 10,
                     ),
                     child: Image(
                       image: AssetImage('assets/images/logo_image.png'),
@@ -109,7 +111,9 @@ class _SignInPageState extends State<SignInPage> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => ForgotPasswordPage()));
+                          },
                         ),
                       ],
                     ),
@@ -136,8 +140,47 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                   Container(
+                      width: size.width * 0.7,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            '----------------------------',
+                            style: TextStyle(color: Color(0xFF707070)),
+                          ),
+                          Text(
+                            'HOẶC',
+                            style: TextStyle(
+                                color: PrimaryColor,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          Text(
+                            '----------------------------',
+                            style: TextStyle(color: Color(0xFF707070)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20,),
+                    Container(
+                      width: 45,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(),
+                      ),
+                      child: GestureDetector(
+                        child: Icon(
+                          MyFlutterApp.gplus,
+                          color: PrimaryColor,
+                        ),
+                        onTap: () => signInWithGoogle()
+                      ),
+                    ),
+                  Container(
                     margin: EdgeInsets.only(
-                      top: 30,
+                      top: 20,
                     ),
                     width: size.width * 0.7,
                     child: Row(
@@ -168,16 +211,8 @@ class _SignInPageState extends State<SignInPage> {
                             );
                           },
                         ),
-                        TextButton(
-                          onPressed: () => signInWithGoogle(),
-                          child: Text('GG'),
-                        ),
                       ],
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () => signOut(),
-                    child: Text('SO'),
                   ),
                 ],
               ),
@@ -201,19 +236,6 @@ class _SignInPageState extends State<SignInPage> {
     });
   }
 
-  Future<void> signOut() async {
-    await auth.signOut();
-    await googleSignIn.signOut();  
-
-    User user = auth.currentUser;
-    if (user != null){
-
-    } else {
-
-    }
-    print(user);
-  }
-
   Future<void> signInWithGoogle() async {
     GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
     GoogleSignInAuthentication googleSignInAuthentication =
@@ -222,12 +244,14 @@ class _SignInPageState extends State<SignInPage> {
     AuthCredential authCredential = GoogleAuthProvider.credential(
         idToken: googleSignInAuthentication.idToken,
         accessToken: googleSignInAuthentication.accessToken);
+        
 
     // ignore: unused_local_variable
     UserCredential authResult = await auth.signInWithCredential(authCredential);
+    // ignore: unused_local_variable
     User user = auth.currentUser;
-    print(authResult);
-    print(user); 
+    // print(authResult);
+    // print(user); 
   }
 
   _signIn(String email, String password) async {
@@ -248,17 +272,14 @@ class _SignInPageState extends State<SignInPage> {
       );
       if (response.statusCode == 200) {
         jsonData = jsonDecode(response.body);
-
-        // var image = jsonData['image'] == null ? 'null' : jsonData['image'];
         var session = FlutterSession();
         await session.set("name", jsonData['name']);
         await session.set("username", jsonData['userId']);
         await session.set("phone", jsonData['phone']);
         await session.set("email", jsonData['email']);
-        // await session.set("image", image);
+        await session.set("image", jsonData['image']);
         await session.set("role", jsonData['role']);
         await session.set("token", jsonData['token']);
-
         Navigator.pushAndRemoveUntil(context,
             MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
       }
@@ -293,9 +314,6 @@ class _SignInPageState extends State<SignInPage> {
     );
     if (response.statusCode == 200) {
       jsonData = jsonDecode(response.body);
-      // print(jsonData['username']);
-      // print(jsonData);
-      // print(jsonData['response']['token']);
       var session = FlutterSession();
       await session.set("name", jsonData['response']['name']);
       await session.set("username", jsonData['response']['username']);
@@ -306,7 +324,6 @@ class _SignInPageState extends State<SignInPage> {
       setState(() {
         Navigator.pushAndRemoveUntil(context,
             MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
-        //  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => AccountProvider(account: jsonData,)), (route) => false);
       });
     } else {
       setState(() {

@@ -1,14 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_session/flutter_session.dart';
 import 'package:house_management_project/components/TextInput.dart';
 import 'package:house_management_project/main.dart';
-import 'package:house_management_project/models/House.dart';
 import 'package:house_management_project/screens/House/ListHouseNotUsing.dart';
 import 'package:house_management_project/screens/House/ListHouseUsing.dart';
-import 'package:http/http.dart' as http;
 
 class ListHouseView extends StatefulWidget {
   // final String username;

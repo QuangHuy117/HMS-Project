@@ -47,7 +47,7 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Align(
               alignment: Alignment.center,
               child: Container(
-                height: size.height,
+                height: size.height * 0.9,
                 width: size.width * 0.9,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.brown, width: 2),
@@ -274,49 +274,6 @@ class _SignUpPageState extends State<SignUpPage> {
                         ],
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: 15,
-                      ),
-                      width: size.width * 0.7,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text(
-                            '----------------------------',
-                            style: TextStyle(color: Color(0xFF707070)),
-                          ),
-                          Text(
-                            'HOẶC',
-                            style: TextStyle(
-                                color: PrimaryColor,
-                                fontWeight: FontWeight.w700),
-                          ),
-                          Text(
-                            '----------------------------',
-                            style: TextStyle(color: Color(0xFF707070)),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 45,
-                      height: 45,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(),
-                      ),
-                      child: GestureDetector(
-                        child: Icon(
-                          MyFlutterApp.gplus,
-                          color: PrimaryColor,
-                        ),
-                        onTap: () {
-                          print("Google");
-                        },
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -368,6 +325,7 @@ class _SignUpPageState extends State<SignUpPage> {
           'role': valueChoose,
           'phone': phone.text,
           'name': name.text,
+          'image': 'https://firebasestorage.googleapis.com/v0/b/hms-project-5d6b1.appspot.com/o/default_avatar%2Fuser.png?alt=media&token=cf65b97e-0e31-4287-8b26-e5de762aa914',
         }),
       );
       print(response.statusCode);

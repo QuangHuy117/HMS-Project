@@ -54,7 +54,7 @@ class Bill {
         isSent: json['isSent'],
         isPaidInFull: json['isPaidInFull'] == null ? null : json['isPaidInFull'],
         contract: Contract.fromJson(json['contract']),
-        billItems: List<BillItem>.from(json['billItems'].map((x) => BillItem.fromJson(x))),
+        billItems: json['billItems'] == null ? null : List<BillItem>.from(json['billItems'].map((x) => BillItem.fromJson(x))),
         payments: json['payments'] == null ? null : List<Payment>.from(json['payments'].map((x) => Payment.fromJson(x))),
     );
 

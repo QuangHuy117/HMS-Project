@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/models/Bill.dart';
@@ -17,9 +17,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
 
   List<Bill> listBill = [];
   List<bool> _isOpen = [];
-  List _listPrice = [];
   var format = NumberFormat('#,###,000');
-  int _price = 0;
 
   getListBill() async {
     var url = Uri.parse(
@@ -28,16 +26,10 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
       var response = await http.get(url);
       print(response.statusCode);
       if (response.statusCode == 200) {
+        print(response.body);
         setState(() {
           listBill = billFromJson(response.body);
-          for (var u in listBill) {
-            for (var i in u.billItems) {
-              _price += i.totalPrice;
-            }
-            _listPrice.add(_price);
-            _price = 0;
-          }
-          print(_listPrice);
+          print(listBill);
         });
       }
     } catch (error) {
@@ -168,7 +160,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                                       width: 20,
                                     ),
                                     Text(
-                                      format.format(_listPrice[index]) + 'đ',
+                                      format.format(listBill[index].totalPrice) + 'đ',
                                       style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w500,

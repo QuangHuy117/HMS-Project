@@ -4,7 +4,6 @@ import 'package:house_management_project/main.dart';
 import 'package:house_management_project/models/Room.dart';
 import 'package:house_management_project/screens/Room/ListRoomNotUsing.dart';
 import 'package:house_management_project/screens/Room/ListRoomUsing.dart';
-import 'package:http/http.dart' as http;
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 
 class RoomPage extends StatefulWidget {
@@ -22,16 +21,6 @@ class _RoomPageState extends State<RoomPage> {
   List<Room> listRoomUsing = [];
   List<Room> listRoomNotUsing = [];
 
-
-  // getListRoomSeparate(List<Room> listRoomSeparate) {
-  //   for (var u in listRoomSeparate) {
-  //     if (u.status == true) {
-  //       listRoomUsing.add(u);
-  //     } else {
-  //       listRoomNotUsing.add(u);
-  //     }
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
