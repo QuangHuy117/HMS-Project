@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
+import 'package:house_management_project/main.dart';
 import 'package:house_management_project/screens/Bill/ListBillPage.dart';
 import 'package:house_management_project/screens/Contract/ListContractPage.dart';
 import 'package:house_management_project/screens/NotificationPage.dart';
 import 'package:house_management_project/screens/Profile/LandLordProfile.dart';
 import 'package:house_management_project/screens/House/ListHouseView.dart';
 import 'package:flutter/foundation.dart';
+import 'package:titled_navigation_bar/titled_navigation_bar.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({
@@ -35,7 +37,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    //  Account account = Provider.of<Account>(context);
     final tabs = [
       ListHouseView(),
       ListBillPage(),
@@ -46,66 +47,34 @@ class _HomePageState extends State<HomePage> {
 
     return SafeArea(
       child: Scaffold(
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey,
-                blurRadius: 5,
-                spreadRadius: 1,
-              )
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(15),
-              topRight: Radius.circular(15),
+        bottomNavigationBar: ClipRRect(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
             ),
-            child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              iconSize: 25,
-              unselectedFontSize: 12,
-              selectedFontSize: 12,
-              backgroundColor: Colors.lightBlue,
-              selectedItemColor: Colors.black,
-              unselectedItemColor: Colors.white,
+          child: TitledBottomNavigationBar(
+              curve: Curves.easeOutBack,
+              activeColor: Colors.black,
+              inactiveColor: Colors.white,
+              reverse: true,
               currentIndex: _currentIndex,
-              items: [
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      MyFlutterApp.home,
-                      size: 28,
-                    ),
-                    label: 'Danh sách nhà'),
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      MyFlutterApp.clipboard,
-                    ),
-                    label: 'Hóa đơn'),
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      MyFlutterApp.file_contract,
-                    ),
-                    label: 'Hợp đồng'),
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      MyFlutterApp.bell,
-                    ),
-                    label: 'Thông báo'),
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      MyFlutterApp.user,
-                    ),
-                    label: 'Hồ sơ'),
-              ],
-              onTap: (value) {
+              onTap: (index) {
                 setState(() {
-                  _currentIndex = value;
+                  _currentIndex = index;
                 });
               },
-            ),
-          ),
+              items: [
+                TitledNavigationBarItem(
+                    title: Container(padding: EdgeInsets.only(left: 15) , child: Text('Danh sách nhà', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w600))), icon: MyFlutterApp.home, backgroundColor: PrimaryColor),
+                TitledNavigationBarItem(
+                    title: Text('Hóa đơn', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.clipboard, backgroundColor: PrimaryColor),
+                TitledNavigationBarItem(
+                    title: Text('Hợp đồng', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.file_contract, backgroundColor: PrimaryColor),
+                TitledNavigationBarItem(
+                    title: Text('Thông báo', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.bell, backgroundColor: PrimaryColor),
+                TitledNavigationBarItem(
+                    title: Text('Hồ sơ', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.user, backgroundColor: PrimaryColor),
+              ]),
         ),
         body: tabs[_currentIndex],
       ),

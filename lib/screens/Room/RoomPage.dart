@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:house_management_project/components/TextInput.dart';
 import 'package:house_management_project/main.dart';
-import 'package:house_management_project/models/Room.dart';
 import 'package:house_management_project/screens/Room/ListRoomNotUsing.dart';
 import 'package:house_management_project/screens/Room/ListRoomUsing.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
@@ -17,14 +17,17 @@ class RoomPage extends StatefulWidget {
 }
 
 class _RoomPageState extends State<RoomPage> {
-  List<Room> listRoom = [];
-  List<Room> listRoomUsing = [];
-  List<Room> listRoomNotUsing = [];
 
+  String showErr = "";
+  TextEditingController name = new TextEditingController();
+
+  createRoom() async {
+    
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: DefaultTabController(
         length: 2,
@@ -88,6 +91,81 @@ class _RoomPageState extends State<RoomPage> {
                     ),
                   ),
                 ],
+              ),
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Color(0xFFF5F5F5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.only(
+                        topLeft: Radius.circular(5),
+                        topRight: Radius.circular(5),
+                      ),
+                    ),
+                    builder: (context) => Padding(
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Tạo phòng mới',
+                                style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              TextInput(
+                                text: 'Nhập tên phòng',
+                                hidePass: false,
+                                // controller: name,
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(showErr.isEmpty ? '' : showErr),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 15, horizontal: 20),
+                                  backgroundColor: PrimaryColor,
+                                ),
+                                child: Text(
+                                  'Xác nhận',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 16),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    if (name.text.isEmpty) {
+                                      showErr =
+                                          'Tên không được trống !!!';
+                                    } else {}
+                                  });
+                                },
+                              ),
+                              Padding(
+                                  padding: EdgeInsets.only(
+                                bottom:
+                                    MediaQuery.of(context).viewInsets.bottom,
+                              )),
+                            ],
+                          ),
+                        ));
+              },
+              backgroundColor: PrimaryColor,
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
               ),
             ),
             body: TabBarView(

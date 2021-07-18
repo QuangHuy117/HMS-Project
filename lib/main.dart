@@ -27,6 +27,8 @@ Future main() async {
 }
 
 const PrimaryColor = Color(0xFF45BAFE);
+const serverHost = 'localhost:44322';
+// const serverHost = 'hmsapi-gb4.conveyor.cloud';
 
 class MyApp extends StatelessWidget {
   @override

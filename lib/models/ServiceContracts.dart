@@ -8,7 +8,7 @@ class ServiceContracts{
   int serviceId;
   int unitPrice;
   bool status;
-  String clockId;
+  int clockId;
   Service service;
   Clock clock;
 

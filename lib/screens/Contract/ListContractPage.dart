@@ -24,7 +24,7 @@ class _ListContractPageState extends State<ListContractPage> {
 
   getListContract() async {
     dynamic token = await FlutterSession().get("token");
-    var url = Uri.parse('https://localhost:44322/api/contracts');
+    var url = Uri.parse('https://$serverHost/api/contracts');
     try {
       var response = await http.get(url,
       headers: {

@@ -11,14 +11,14 @@ String houseToJson(List<House> data) =>
 
 class House {
   String id;
-  String ownerUsername;
+  String ownerUserId;
   bool isDeleted;
   bool status;
   HouseInfo houseInfo;
 
   House({
     this.id,
-    this.ownerUsername,
+    this.ownerUserId,
     this.isDeleted,
     this.status,
     this.houseInfo,
@@ -26,7 +26,7 @@ class House {
 
   factory House.fromJson(Map<String, dynamic> json) => House(
     id: json['id'],
-    ownerUsername: json['ownerUsername'],
+    ownerUserId: json['ownerUserId'],
     isDeleted: json['isDeleted'],
     status: json['status'],
     houseInfo: HouseInfo.fromJson(json['houseInfo']),
@@ -34,7 +34,7 @@ class House {
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "ownerUsername": ownerUsername,
+        "ownerUserId": ownerUserId,
         "isDeleted": isDeleted,
         "status": status,
         "houseInfo": houseInfo,

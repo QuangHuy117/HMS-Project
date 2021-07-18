@@ -71,7 +71,7 @@ class _HouseSettingPageState extends State<HouseSettingPage> {
           ),
           body: TabBarView(
             children: [
-              HouseDetailsPage(),
+              HouseDetailsPage(houseId: widget.houseId,),
               HouseServicesPage(houseId: widget.houseId,),
             ],
           ),

@@ -1,3 +1,4 @@
+import 'package:house_management_project/models/Clock.dart';
 import 'package:house_management_project/models/Contract.dart';
 import 'dart:convert';
 
@@ -10,6 +11,7 @@ class Room {
   bool status;
   bool isDeleted;
   Contract contract;
+  List<Clock> clocks;
 
   Room({
     this.id,
@@ -18,6 +20,7 @@ class Room {
     this.status,
     this.isDeleted,
     this.contract,
+    this.clocks,
   });
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
@@ -27,6 +30,7 @@ class Room {
         status: json["status"],
         isDeleted: json["isDeleted"],
         contract: json['contract'] == null ? null : Contract.fromJson(json['contract']),
+        clocks: json['clocks'] == null ? null : List<Clock>.from(json["clocks"].map((x) => Clock.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -36,5 +40,6 @@ class Room {
         "status": status,
         "isDeleted": isDeleted,
         "contract": contract,
+        "clocks": List<dynamic>.from(clocks.map((x) => x.toJson())),
       };
 }

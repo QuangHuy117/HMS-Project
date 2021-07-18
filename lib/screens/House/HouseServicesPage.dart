@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:house_management_project/main.dart';
 import 'package:house_management_project/models/HouseServices.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -15,7 +16,7 @@ class _HouseServicesPageState extends State<HouseServicesPage> {
   List<HouseServices> listService = [];
 
   getServicesByHouseId() async {
-    var url = Uri.parse('https://localhost:44322/api/houses/${widget.houseId}');
+    var url = Uri.parse('https://$serverHost/api/houses/${widget.houseId}');
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {

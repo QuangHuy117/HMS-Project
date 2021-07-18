@@ -58,11 +58,16 @@ class _SetUserFormState extends State<SetUserForm> {
   // String token =
   // 'https://firebasestorage.googleapis.com/v0/b/hms-project-5d6b1.appspot.com/o/files%2F205558665_949919552234828_8681075534449186613_n.jpg?alt=media&token=3e6351f0-915f-4b07-9cfd-d5e6540fed68';
 
-  countHouse() async {
+  getSession() async {
     name = await FlutterSession().get("name");
     image = await FlutterSession().get("image");
+  }
+
+  countHouse() async {
+    
+    // image = await FlutterSession().get("image");
     dynamic token = await FlutterSession().get("token");
-    var url = Uri.parse('https://localhost:44322/api/houses/count');
+    var url = Uri.parse('https://$serverHost/api/houses/count');
     try {
       var response = await http.get(
         url,
@@ -83,7 +88,7 @@ class _SetUserFormState extends State<SetUserForm> {
 
   getHouseData() async {
     dynamic token = await FlutterSession().get("token");
-    var url = Uri.parse('https://localhost:44322/api/houses');
+    var url = Uri.parse('https://$serverHost/api/houses');
     try {
       var response = await http.get(
         url,
@@ -106,7 +111,7 @@ class _SetUserFormState extends State<SetUserForm> {
   }
 
   countRoom(String id) async {
-    var url = Uri.parse('https://localhost:44322/api/rooms/count?HouseId=$id');
+    var url = Uri.parse('https://$serverHost/api/rooms/count?HouseId=$id');
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {
@@ -120,7 +125,7 @@ class _SetUserFormState extends State<SetUserForm> {
   }
 
   countRoomSeperate(String id) async {
-    var url = Uri.parse('https://localhost:44322/api/rooms?HouseId=$id');
+    var url = Uri.parse('https://$serverHost/api/rooms?HouseId=$id');
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {
@@ -165,7 +170,9 @@ class _SetUserFormState extends State<SetUserForm> {
 
   @override
   void initState() {
+    image = FlutterSession().get("image").then((value) => print(value));
     super.initState();
+    getSession();
     countHouse();
     getHouseData();
   }
@@ -316,7 +323,7 @@ class _SetUserFormState extends State<SetUserForm> {
             Container(
               margin: EdgeInsets.only(top: 20),
               color: Colors.white,
-              height: MediaQuery.of(context).size.height * 0.45,
+              height: MediaQuery.of(context).size.height * 0.465,
               child: Column(
                 children: [
                   ListTile(
@@ -417,11 +424,11 @@ class _SetUserFormState extends State<SetUserForm> {
                   child: CircleAvatar(
                     radius: (45),
                     backgroundColor: Colors.white,
-                    // backgroundImage: NetworkImage('$image',),
+                    // backgroundImage: NetworkImage('${image.toString()}',),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(30),
                       child: Image.network(
-                        '$image',
+                        image is Future<void> ? "https://firebasestorage.googleapis.com/v0/b/hms-project-5d6b1.appspot.com/o/default_avatar%2Fuser.png?alt=media&token=cf65b97e-0e31-4287-8b26-e5de762aa914" : image.toString(),
                         width: 70,
                         fit: BoxFit.cover,
                       ),

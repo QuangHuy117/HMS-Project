@@ -2,7 +2,7 @@
 import 'package:house_management_project/models/ClockValue.dart';
 
 class Clock {
-  String id;
+  int id;
   int roomId;
   String clockCategoryId;
   bool status;

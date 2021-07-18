@@ -7,9 +7,10 @@ import 'package:house_management_project/components/TextInput.dart';
 import 'package:house_management_project/components/TextPasswordInput.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/main.dart';
-import 'package:house_management_project/screens/ForgotPasswordPage.dart';
+import 'package:house_management_project/screens/SignIn/ForgotPasswordPage.dart';
 import 'package:house_management_project/screens/HomePage.dart';
 import 'package:house_management_project/screens/SignUp/SignUpPage.dart';
+import 'package:house_management_project/screens/Tenant/TenantHomePage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -33,7 +34,7 @@ class _SignInPageState extends State<SignInPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 100, horizontal: 40),
+            padding: EdgeInsets.symmetric(vertical: 55, horizontal: 40),
             // decoration: BoxDecoration(
             //   image: DecorationImage(
             //     image: AssetImage('assets/images/ImageBackground.jpg'),
@@ -43,7 +44,7 @@ class _SignInPageState extends State<SignInPage> {
             color: Color(0xFFFFF5EE),
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 10),
-              height: size.height * 0.8,
+              height: size.height * 0.85,
               width: size.width * 0.9,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.brown, width: 2),
@@ -65,7 +66,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                   SizedBox(
-                    height: size.height * 0.04,
+                    height: size.height * 0.02,
                   ),
                   Container(
                     child: Column(
@@ -241,6 +242,8 @@ class _SignInPageState extends State<SignInPage> {
     GoogleSignInAuthentication googleSignInAuthentication =
         await googleSignInAccount.authentication;
 
+    // print(googleSignInAuthentication.idToken);
+
     AuthCredential authCredential = GoogleAuthProvider.credential(
         idToken: googleSignInAuthentication.idToken,
         accessToken: googleSignInAuthentication.accessToken);
@@ -250,24 +253,31 @@ class _SignInPageState extends State<SignInPage> {
     UserCredential authResult = await auth.signInWithCredential(authCredential);
     // ignore: unused_local_variable
     User user = auth.currentUser;
-    // print(authResult);
-    // print(user); 
+
+    print(authResult.user.getIdToken().then((value) => print("-----" + value)));
+
+    // print(user.providerData.first.providerId); 
   }
 
   _signIn(String email, String password) async {
     try {
       UserCredential user = await auth.signInWithEmailAndPassword(
           email: email, password: password);
+      var idToken = await user.user.getIdToken();
+      print(idToken);
       var jsonData = null;
       var url = Uri.parse(
-          'https://localhost:44322/api/accounts/authenticate-firebase');
+          'https://$serverHost/api/accounts/authenticate');
+          print(url);
       var response = await http.post(
         url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode({
-          'userId': user.user.uid,
+          "idToken": idToken,
+          // 'email': email,
+          // 'password': password,
         }),
       );
       if (response.statusCode == 200) {
@@ -280,8 +290,15 @@ class _SignInPageState extends State<SignInPage> {
         await session.set("image", jsonData['image']);
         await session.set("role", jsonData['role']);
         await session.set("token", jsonData['token']);
-        Navigator.pushAndRemoveUntil(context,
+
+        if (jsonData['role'] == 'Chủ trọ') {
+          Navigator.pushAndRemoveUntil(context,
             MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
+        } else {
+          Navigator.pushAndRemoveUntil(context,
+            MaterialPageRoute(builder: (_) => TenantHomePage()), (route) => false);
+        }
+        
       }
     } on FirebaseAuthException catch (e) {
       print(e.code);
@@ -301,7 +318,7 @@ class _SignInPageState extends State<SignInPage> {
 
   void checkSignIn(String username, String password) async {
     var jsonData = null;
-    var url = Uri.parse('https://localhost:44322/api/accounts/authenticate');
+    var url = Uri.parse('https://$serverHost/api/accounts/authenticate');
     var response = await http.post(
       url,
       headers: <String, String>{

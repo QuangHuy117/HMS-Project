@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
@@ -18,18 +19,18 @@ class ListHouseUsing extends StatefulWidget {
 }
 
 class _ListHouseUsingState extends State<ListHouseUsing> {
-
   List<House> listHouse = [];
 
   getHouseData() async {
+    listHouse.clear();
     dynamic token = await FlutterSession().get("token");
-    var url = Uri.parse(
-        'https://localhost:44322/api/houses?Status=true');
+    var url = Uri.parse('https://$serverHost/api/houses?Status=true');
     try {
-      var response = await http.get(url, 
-     headers: {
-      HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}',
-    },
+      var response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}',
+        },
       );
       print(response.statusCode);
       if (response.statusCode == 200) {
@@ -60,114 +61,133 @@ class _ListHouseUsingState extends State<ListHouseUsing> {
         height: size.height * 0.8,
         width: size.width,
         padding: EdgeInsets.symmetric(vertical: 10),
-        child: ListView.builder(
-          itemBuilder: (context, index) {
-            return Container(
-              height: size.height * 0.14,
-              padding: EdgeInsets.symmetric(
-                horizontal: 25,
-              ),
-              margin: EdgeInsets.only(
-                top: 30,
-              ),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => RoomNavigationBar(
-                            houseId: listHouse[index].id,
-                            )),
-                  );
-                },
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  elevation: 6,
-                  shadowColor: Colors.black,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        top: 30,
-                        left: 5,
-                        child: Icon(
-                          MyFlutterApp.home,
-                          color: PrimaryColor,
-                          size: 60,
-                        ),
+        child: RefreshIndicator(
+          child: ListView.builder(
+            itemBuilder: (context, index) {
+              return Container(
+                height: size.height * 0.15,
+                padding: EdgeInsets.symmetric(
+                  horizontal: 25,
+                ),
+                margin: EdgeInsets.only(
+                  top: 30,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RoomNavigationBar(
+                                houseId: listHouse[index].id,
+                              )),
+                    );
+                  },
+                  child: Slidable(
+                    actionPane: SlidableDrawerActionPane(),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      Positioned(
-                        top: 28,
-                        left: 70,
-                        child: Container(
-                          width: size.width * 0.6,
-                          padding: EdgeInsets.only(
+                      elevation: 6,
+                      shadowColor: Colors.black,
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: 30,
+                            left: 5,
+                            child: Icon(
+                              MyFlutterApp.home,
+                              color: PrimaryColor,
+                              size: 60,
+                            ),
+                          ),
+                          Positioned(
+                            top: 28,
+                            left: 70,
+                            child: Container(
+                              width: size.width * 0.6,
+                              padding: EdgeInsets.only(
+                                right: 10,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Nhà ở ${listHouse[index].houseInfo.name}',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    '${listHouse[index].houseInfo.address}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 15,
                             right: 10,
+                            child: Text(
+                              '${listHouse[index].status ? 'Đang thuê' : ''}',
+                              style: TextStyle(
+                                color: listHouse[index].status
+                                    ? PrimaryColor
+                                    : Color(0xFF707070),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${listHouse[index].houseInfo.name}',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                          Positioned(
+                            bottom: 10,
+                            right: 10,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => HouseSettingPage(
+                                          houseId: listHouse[index].id)),
+                                );
+                              },
+                              child: Icon(
+                                MyFlutterApp.cog,
+                                color: PrimaryColor,
+                                size: 28,
                               ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                '${listHouse[index].houseInfo.address}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                      Positioned(
-                        top: 15,
-                        right: 10,
-                        child: Text(
-                          '${listHouse[index].status ? 'Đang thuê' : ''}',
-                          style: TextStyle(
-                            color: listHouse[index].status
-                                ? PrimaryColor
-                                : Color(0xFF707070),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
+                    ),
+                    secondaryActions: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(20),
+                          bottomRight: Radius.circular(20),
                         ),
-                      ),
-                      Positioned(
-                        bottom: 15,
-                        right: 10,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HouseSettingPage(
-                                      houseId: listHouse[index].id)),
-                            );
-                          },
-                          child: Icon(
-                            MyFlutterApp.cog,
-                            color: PrimaryColor,
-                            size: 28,
-                          ),
+                        child: IconSlideAction(
+                          caption: 'Delete',
+                          color: Colors.red,
+                          icon: Icons.delete,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            );
-          },
-          itemCount: listHouse.length,
+              );
+            },
+            itemCount: listHouse.length,
+          ),
+          onRefresh: () => getHouseData(),
         ),
       ),
     );

@@ -1,7 +1,7 @@
 class ClockValue {
   int id;
   DateTime createDate;
-  String clockId;
+  int clockId;
   int indexValue;
   DateTime recordDate;
   bool status;

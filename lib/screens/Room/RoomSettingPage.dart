@@ -73,7 +73,8 @@ class _RoomSettingPageState extends State<RoomSettingPage> {
             ),
           body: TabBarView(
               children: [
-                RoomDetailsPage(roomId: widget.roomId,),
+                RoomDetailsPage(roomId: widget.roomId,
+                houseId: widget.houseId),
                 RoomServicesPage(roomId: widget.roomId,
                 houseId: widget.houseId,),
               ],

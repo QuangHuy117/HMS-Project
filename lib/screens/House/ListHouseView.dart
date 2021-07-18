@@ -1,12 +1,19 @@
+import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter_session/flutter_session.dart';
+import 'package:house_management_project/api/firebase_api.dart';
+import 'package:path/path.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:house_management_project/components/TextInput.dart';
 import 'package:house_management_project/main.dart';
 import 'package:house_management_project/screens/House/ListHouseNotUsing.dart';
 import 'package:house_management_project/screens/House/ListHouseUsing.dart';
+import 'package:http/http.dart' as http;
 
 class ListHouseView extends StatefulWidget {
-  // final String username;
   ListHouseView({
     Key key,
   }) : super(key: key);
@@ -19,7 +26,62 @@ class _ListHouseViewState extends State<ListHouseView> {
   TextEditingController name = new TextEditingController();
   TextEditingController address = new TextEditingController();
   String showErr = "";
+  String responseMsg = '';
+  UploadTask task;
+  File file;
+  String urlImage = "";
 
+  Future createHouse(String name, String address, String urlImg, BuildContext context) async {
+    dynamic token = await FlutterSession().get("token");
+    try {
+      var jsonData = null;
+      var url = Uri.parse('https://$serverHost/api/houses');
+      var response = await http.post(
+        url,
+        headers:{
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}',
+        },
+        body: jsonEncode({
+            "houseInfos": {"name": name, "address": address, "image": urlImg}
+        }),
+      );
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        jsonData = response.body;
+        responseMsg = 'Tạo nhà thành công';
+        Navigator.pop(context);
+      }
+    } catch (error) {
+      throw (error);
+    }
+  }
+
+  Future selectFile() async {
+    final result = await FilePicker.platform.pickFiles(allowMultiple: false);
+
+    if (result == null) return;
+    final path = result.files.single.path;
+
+    setState(() => file = File(path));
+    // }
+
+    // Future uploadFile() async {
+    if (file == null) return;
+
+    final fileName = basename(file.path);
+    final destination = 'houses_image/$fileName';
+
+    task = FirebaseApi.uploadFile(destination, file);
+    setState(() {});
+
+    if (task == null) return;
+
+    final snapshot = await task.whenComplete(() {});
+    final urlDownload = await snapshot.ref.getDownloadURL();
+    urlImage = urlDownload;
+    print('Download-Link: $urlImage');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +102,10 @@ class _ListHouseViewState extends State<ListHouseView> {
                         topRight: Radius.circular(5),
                       ),
                     ),
-                    builder: (context) => Padding(
+                    builder: (context) {
+                      return StatefulBuilder(builder:
+                          (BuildContext context, StateSetter stateModel) {
+                        return Padding(
                           padding: EdgeInsets.symmetric(vertical: 15),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -74,7 +139,6 @@ class _ListHouseViewState extends State<ListHouseView> {
                                     ]),
                                 child: TextField(
                                   controller: address,
-                                  // maxLines: 2,
                                   textInputAction: TextInputAction.done,
                                   decoration: InputDecoration(
                                     hintText: 'Nhập địa chỉ nhà',
@@ -91,9 +155,57 @@ class _ListHouseViewState extends State<ListHouseView> {
                                 ),
                               ),
                               SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
-                              Text(showErr.isEmpty ? '' : showErr),
+                              Text(
+                                showErr.isEmpty ? '' : showErr,
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red),
+                              ),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Container(
+                                height: size.height * 0.07,
+                                width: size.width * 0.7,
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      height: size.height * 0.07,
+                                      width: size.width * 0.145,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.black, width: 1),
+                                      ),
+                                      child: GestureDetector(
+                                        child: file == null
+                                            ? Icon(
+                                                Icons.add,
+                                                size: 50,
+                                              )
+                                            : Image.file(file),
+                                        onTap: () {
+                                          stateModel(() {
+                                            selectFile();
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    TextButton(
+                                      child: Text(
+                                        'Refresh Image',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                      onPressed: () {
+                                        stateModel(() {});
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
                               SizedBox(
                                 height: 10,
                               ),
@@ -109,12 +221,25 @@ class _ListHouseViewState extends State<ListHouseView> {
                                       color: Colors.white, fontSize: 16),
                                 ),
                                 onPressed: () {
-                                  setState(() {
+                                  stateModel(() {
                                     if (name.text.isEmpty ||
                                         address.text.isEmpty) {
                                       showErr =
                                           'Thông tin không được trống !!!';
-                                    } else {}
+                                    } else {
+                                      createHouse(
+                                              name.text, address.text, urlImage, context)
+                                          .then((value) => {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                    responseMsg,
+                                                    style:
+                                                        TextStyle(fontSize: 20),
+                                                  ),
+                                                )),
+                                              });
+                                    }
                                   });
                                 },
                               ),
@@ -125,7 +250,9 @@ class _ListHouseViewState extends State<ListHouseView> {
                               )),
                             ],
                           ),
-                        ));
+                        );
+                      });
+                    });
               },
               backgroundColor: PrimaryColor,
               child: Icon(

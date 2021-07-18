@@ -312,7 +312,7 @@ class _SignUpPageState extends State<SignUpPage> {
     try {
       UserCredential user = await auth.createUserWithEmailAndPassword(
           email: email.text, password: password.text);
-      var url = Uri.parse('https://localhost:44322/api/accounts/register');
+      var url = Uri.parse('https://$serverHost/api/accounts/register');
       var response = await http.post(
         url,
         headers: <String, String>{

@@ -38,7 +38,7 @@ class _RoomServicesPageState extends State<RoomServicesPage> {
   List<bool> _isOpen = [];
 
   getRoomService() async {
-    var url = Uri.parse('https://localhost:44322/api/rooms/${widget.roomId}');
+    var url = Uri.parse('https://$serverHost/api/rooms/${widget.roomId}');
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {
@@ -69,7 +69,7 @@ class _RoomServicesPageState extends State<RoomServicesPage> {
       int conId, String startDate, String endDate, List createBillItems) async {
     dynamic token = await FlutterSession().get("token");
     var jsonData = null;
-    var url = Uri.parse('https://localhost:44322/api/bills');
+    var url = Uri.parse('https://$serverHost/api/bills');
     try {
       var response = await http.post(
         url,
@@ -643,12 +643,6 @@ class _RoomServicesPageState extends State<RoomServicesPage> {
                         // } catch (e) {
                         //   print(e.toString());
                         // }
-                        // DateFormat("yyyy-MM-dd").parse(endDatePicked.text);
-                        // print(listMap);
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => DisplayBillPage()));
                       },
                     ),
                   ),
