@@ -45,10 +45,10 @@ class SetUserForm extends StatefulWidget {
 class _SetUserFormState extends State<SetUserForm> {
   List<House> listHouse = [];
   List<Room> listRoom = [];
-  List<Room> listRoomUsing = [];
-  List<Room> listRoomNotUsing = [];
   int _numberOfHouse = 0;
   int _numberOfRoom = 0;
+  int _numberOfRoomUsing = 0;
+  int _numberOfRoomNotUsing = 0;
   UploadTask task;
   File file;
   dynamic name, image;
@@ -64,8 +64,6 @@ class _SetUserFormState extends State<SetUserForm> {
   }
 
   countHouse() async {
-    
-    // image = await FlutterSession().get("image");
     dynamic token = await FlutterSession().get("token");
     var url = Uri.parse('https://$serverHost/api/houses/count');
     try {
@@ -86,9 +84,9 @@ class _SetUserFormState extends State<SetUserForm> {
     }
   }
 
-  getHouseData() async {
+  countRoom() async {
     dynamic token = await FlutterSession().get("token");
-    var url = Uri.parse('https://$serverHost/api/houses');
+    var url = Uri.parse('https://$serverHost/api/rooms/count');
     try {
       var response = await http.get(
         url,
@@ -98,11 +96,7 @@ class _SetUserFormState extends State<SetUserForm> {
       );
       if (response.statusCode == 200) {
         setState(() {
-          listHouse = houseFromJson(response.body);
-          for (var i in listHouse) {
-            countRoom(i.id);
-            countRoomSeperate(i.id);
-          }
+          _numberOfRoom = int.parse(response.body);
         });
       }
     } catch (error) {
@@ -110,13 +104,19 @@ class _SetUserFormState extends State<SetUserForm> {
     }
   }
 
-  countRoom(String id) async {
-    var url = Uri.parse('https://$serverHost/api/rooms/count?HouseId=$id');
+  countRoomUsing() async {
+    dynamic token = await FlutterSession().get("token");
+    var url = Uri.parse('https://$serverHost/api/rooms/count?Status=true');
     try {
-      var response = await http.get(url);
+      var response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}',
+        },
+      );
       if (response.statusCode == 200) {
         setState(() {
-          _numberOfRoom += int.parse(response.body);
+          _numberOfRoomUsing = int.parse(response.body);
         });
       }
     } catch (error) {
@@ -124,20 +124,19 @@ class _SetUserFormState extends State<SetUserForm> {
     }
   }
 
-  countRoomSeperate(String id) async {
-    var url = Uri.parse('https://$serverHost/api/rooms?HouseId=$id');
+  countRoomNotUsing() async {
+    dynamic token = await FlutterSession().get("token");
+    var url = Uri.parse('https://$serverHost/api/rooms/count?Status=false');
     try {
-      var response = await http.get(url);
+      var response = await http.get(
+        url,
+        headers: {
+          HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}',
+        },
+      );
       if (response.statusCode == 200) {
         setState(() {
-          listRoom = roomFromJson(response.body);
-          for (var i in listRoom) {
-            if (i.status == true) {
-              listRoomUsing.add(i);
-            } else {
-              listRoomNotUsing.add(i);
-            }
-          }
+          _numberOfRoomNotUsing = int.parse(response.body);
         });
       }
     } catch (error) {
@@ -174,7 +173,9 @@ class _SetUserFormState extends State<SetUserForm> {
     super.initState();
     getSession();
     countHouse();
-    getHouseData();
+    countRoom();
+    countRoomUsing();
+    countRoomNotUsing();
   }
 
   @override
@@ -284,7 +285,7 @@ class _SetUserFormState extends State<SetUserForm> {
                                     height: 10,
                                   ),
                                   Text(
-                                    listRoomUsing.length.toString(),
+                                    _numberOfRoomUsing.toString(),
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600),
@@ -305,7 +306,7 @@ class _SetUserFormState extends State<SetUserForm> {
                                     height: 10,
                                   ),
                                   Text(
-                                    listRoomNotUsing.length.toString(),
+                                    _numberOfRoomNotUsing.toString(),
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600),
@@ -428,7 +429,9 @@ class _SetUserFormState extends State<SetUserForm> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(30),
                       child: Image.network(
-                        image is Future<void> ? "https://firebasestorage.googleapis.com/v0/b/hms-project-5d6b1.appspot.com/o/default_avatar%2Fuser.png?alt=media&token=cf65b97e-0e31-4287-8b26-e5de762aa914" : image.toString(),
+                        image is Future<void>
+                            ? "https://firebasestorage.googleapis.com/v0/b/hms-project-5d6b1.appspot.com/o/default_avatar%2Fuser.png?alt=media&token=cf65b97e-0e31-4287-8b26-e5de762aa914"
+                            : image.toString(),
                         width: 70,
                         fit: BoxFit.cover,
                       ),

@@ -7,6 +7,9 @@ class HouseInfo {
     String address;
     String houseId;
     String image;
+    int paidDeadline;
+    int billDate;
+    int beforeNotiDate;
 
     
     HouseInfo({
@@ -15,6 +18,9 @@ class HouseInfo {
         this.address,
         this.houseId,
         this.image,
+        this.paidDeadline,
+        this.billDate,
+        this.beforeNotiDate,
     });
 
 
@@ -24,6 +30,9 @@ class HouseInfo {
         address: json['address'],
         houseId: json['houseId'],
         image: json['image'] == null ? null : json['image'],
+        paidDeadline: json['paidDeadline'] == null ? null : json['paidDeadline'],
+        billDate: json['billDate'] == null ? null : json['billDate'],
+        beforeNotiDate: json['beforeNotiDate'] == null ? null : json['beforeNotiDate'],
     );
 
     Map<String, dynamic> toJson() => {
@@ -31,6 +40,9 @@ class HouseInfo {
         "name": name,
         "address": address,
         "houseId": houseId,
-        "image": image
+        "image": image,
+        "paidDeadline": paidDeadline,
+        "billDate": billDate,
+        "beforeNotiDate": beforeNotiDate,
     };
 }

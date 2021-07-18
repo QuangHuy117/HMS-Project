@@ -45,8 +45,8 @@ class _RoomNavigationBarState extends State<RoomNavigationBar> {
             ),
           child: TitledBottomNavigationBar(
               curve: Curves.easeOutBack,
-              activeColor: Colors.white,
-              indicatorColor: Colors.pink,
+              activeColor: Colors.black,
+              indicatorColor: Colors.black,
               inactiveColor: Colors.white,
               reverse: true,
               currentIndex: _currentIndex,

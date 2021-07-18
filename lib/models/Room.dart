@@ -8,6 +8,8 @@ class Room {
   int id;
   String name;
   String houseId;
+  int roomSquare;
+  int defaultPrice;
   bool status;
   bool isDeleted;
   Contract contract;
@@ -17,6 +19,8 @@ class Room {
     this.id,
     this.name,
     this.houseId,
+    this.roomSquare,
+    this.defaultPrice,
     this.status,
     this.isDeleted,
     this.contract,
@@ -27,6 +31,8 @@ class Room {
         id: json["id"],
         name: json["name"],
         houseId: json['houseId'],
+        roomSquare: json['roomSquare'] == null ? null : json['roomSquate'],
+        defaultPrice: json['defaultPrice'] == null ? null : json['defaultPrice'],
         status: json["status"],
         isDeleted: json["isDeleted"],
         contract: json['contract'] == null ? null : Contract.fromJson(json['contract']),
@@ -37,6 +43,8 @@ class Room {
         "id": id,
         "name": name,
         "houseId": houseId,
+        "roomSquare": roomSquare,
+        "defaultPrice": defaultPrice,
         "status": status,
         "isDeleted": isDeleted,
         "contract": contract,

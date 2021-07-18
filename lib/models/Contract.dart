@@ -6,6 +6,8 @@ class Contract {
   String ownerUserId;
   String tenantUserId;
   int roomId;
+  int roomPrice;
+  String note;
   DateTime startDate;
   DateTime endDate;
   bool status;
@@ -17,6 +19,8 @@ class Contract {
     this.ownerUserId,
     this.tenantUserId,
     this.roomId,
+    this.roomPrice,
+    this.note,
     this.startDate,
     this.endDate,
     this.status,
@@ -29,6 +33,8 @@ class Contract {
         ownerUserId: json['owneruserId'],
         tenantUserId: json['tenantuserId'],
         roomId: json['roomId'],
+        roomPrice: json['roomPrice'],
+        note: json['note'] == null ? null : json['note'] ,
         startDate: DateTime.parse(json['startDate']),
         endDate: DateTime.parse(json['endDate']),
         status: json['status'],
@@ -41,6 +47,8 @@ class Contract {
     "owneruserId": ownerUserId,
     "tenantuserId": tenantUserId,
     "roomId": roomId,
+    "roomPrice": roomPrice,
+    "note": note,
     "startDate": startDate,
     "endDate": endDate,
     "status": status,

@@ -3,23 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:house_management_project/main.dart';
 import 'package:house_management_project/models/Contract.dart';
 import 'package:house_management_project/models/Room.dart';
-import 'package:house_management_project/models/User.dart';
 import 'package:house_management_project/screens/Contract/ContractDetailPage.dart';
+import 'package:house_management_project/screens/Contract/CreateContractPage.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class RoomDetailsPage extends StatefulWidget {
   final int roomId;
   final String houseId;
-  const RoomDetailsPage({Key key, @required this.roomId, @required this.houseId}) : super(key: key);
+  const RoomDetailsPage(
+      {Key key, @required this.roomId, @required this.houseId})
+      : super(key: key);
 
   @override
   _RoomDetailsPageState createState() => _RoomDetailsPageState();
 }
 
 class _RoomDetailsPageState extends State<RoomDetailsPage> {
-  DateTime _startDate = DateTime.now();
-  DateTime _endDate = DateTime.now();
   TextEditingController startDatePicked;
   TextEditingController endDatePicked;
   TextEditingController name = new TextEditingController();
@@ -29,6 +29,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
   Room detail = new Room();
   Contract contract = new Contract();
   bool _isEdit = false;
+  bool _isLoading = true;
 
   getRoomDetailFromRoomId() async {
     var url = Uri.parse('https://$serverHost/api/rooms/${widget.roomId}');
@@ -40,42 +41,8 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
         setState(() {
           detail = Room.fromJson(jsonData);
           name = new TextEditingController(text: detail.name);
+          _isLoading = false;
         });
-      }
-    } catch (error) {
-      throw (error);
-    }
-  }
-
-  getContractDetail() async {
-    var url =
-        Uri.parse('https://$serverHost/api/contracts/1');
-    try {
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body);
-        setState(() {
-          contract = Contract.fromJson(jsonData);
-        });
-      }
-    } catch (error) {
-      throw (error);
-    }
-  }
-
-  Future<List<User>> getListUser(String query) async {
-    var url = Uri.parse('https://$serverHost/api/accounts');
-    try {
-      var response = await http.get(url);
-      print(response.statusCode);
-      if (response.statusCode == 200) {
-        final List listUser = jsonDecode(response.body);
-        return listUser.map((e) => User.fromJson(e)).where((user) {
-          final nameLower = user.name.toLowerCase();
-          final queryLower = query.toLowerCase();
-
-          return nameLower.contains(queryLower);
-        }).toList();
       }
     } catch (error) {
       throw (error);
@@ -86,10 +53,8 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
   void initState() {
     super.initState();
     getRoomDetailFromRoomId();
-    getContractDetail();
   }
 
-  
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -190,137 +155,180 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
                       fontWeight: FontWeight.w700,
                       color: Colors.blue),
                 ),
+                SizedBox(height: 20,),
+                Container(
+                  child: _isLoading
+                      ? Center(
+                          child: SizedBox(
+                              width: 30,
+                              height: 30,
+                              child: CircularProgressIndicator()))
+                      : Container(
+                          child: detail.contract == null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                        child: Text(
+                                      'Chưa tồn tại hợp đồng !!!',
+                                      style: TextStyle(
+                                          fontSize: 23,
+                                          fontWeight: FontWeight.w600),
+                                    )),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Container(
+                                      width: size.width * 0.2,
+                                      height: size.height * 0.045,
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        child: TextButton(
+                                          style: TextButton.styleFrom(
+                                            backgroundColor: PrimaryColor,
+                                          ),
+                                          child: Text(
+                                            'Tạo',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w700),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.push(context, 
+                                            MaterialPageRoute(builder: (_) => CreateContractPage(houseId: widget.houseId, roomName: detail.name, roomId: widget.roomId,)));
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) => ContractDetailPage(
+                                                  contractId:
+                                                      detail.contract.id,
+                                                  houseId: widget.houseId,
+                                                )));
+                                  },
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(20),
+                                          bottomLeft: Radius.circular(20),
+                                          topRight: Radius.circular(20),
+                                          bottomRight: Radius.circular(20)),
+                                    ),
+                                    elevation: 5,
+                                    shadowColor: Colors.black,
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 20),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(20),
+                                            bottomLeft: Radius.circular(20),
+                                            topRight: Radius.circular(20),
+                                            bottomRight: Radius.circular(20)),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            'Hợp đồng khách hàng: ${detail.contract == null ? '' : detail.contract.tenant.name}',
+                                            style: TextStyle(
+                                                fontSize: 19,
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Divider(
+                                            indent: 30,
+                                            endIndent: 30,
+                                            thickness: 1,
+                                            color: Colors.grey,
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 20),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  'Ngày bắt đầu: ',
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                                SizedBox(
+                                                  width: 20,
+                                                ),
+                                                Text(
+                                                  detail.contract == null
+                                                      ? ''
+                                                      : DateFormat('dd/MM/yyyy')
+                                                          .format(detail
+                                                              .contract
+                                                              .startDate),
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 20),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  'Ngày kết thúc: ',
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                                SizedBox(
+                                                  width: 20,
+                                                ),
+                                                Text(
+                                                  detail.contract == null
+                                                      ? ''
+                                                      : DateFormat('dd/MM/yyyy')
+                                                          .format(detail
+                                                              .contract
+                                                              .endDate),
+                                                  style:
+                                                      TextStyle(fontSize: 18),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                        ),
+                ),
                 SizedBox(
                   height: 20,
-                ),
-                Container(
-                  height: size.height * 0.3,
-                  child: detail.contract == null ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        child: Text('Chưa tồn tại hợp đồng !!!', style: TextStyle(fontSize: 23, fontWeight: FontWeight.w600),)),
-                      SizedBox(height: 20,),
-                      Container(
-                  width: size.width * 0.2,
-                  height: size.height * 0.045,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10.0),
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: PrimaryColor,
-                      ),
-                      child: Text(
-                        'Tạo',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700),
-                      ),
-                      onPressed: () {
-                      },
-                    ),
-                  ),
-                ),
-                    ],
-                  )
-                  : GestureDetector(
-                    onTap: () {
-                      Navigator.push(context, 
-                      MaterialPageRoute(builder: (_) => ContractDetailPage(contractId: detail.contract.id, houseId: widget.houseId,)));
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            bottomLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                            bottomRight: Radius.circular(20)),
-                      ),
-                      elevation: 5,
-                      shadowColor: Colors.black,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            bottomLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                            bottomRight: Radius.circular(20)),
-                        ),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              'Hợp đồng khách hàng: ${detail.contract == null ? '' : detail.contract.tenant.name}',
-                              style: TextStyle(
-                                  fontSize: 19, fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Divider(
-                              indent: 30,
-                              endIndent: 30,
-                              thickness: 1,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Ngày bắt đầu: ',
-                                    style: TextStyle(
-                                        fontSize: 18, fontWeight: FontWeight.w700),
-                                  ),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Text(
-                                   detail.contract == null ? '' : DateFormat('dd/MM/yyyy')
-                                        .format(detail.contract.startDate),
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Ngày kết thúc: ',
-                                    style: TextStyle(
-                                        fontSize: 18, fontWeight: FontWeight.w700),
-                                  ),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Text(
-                                     detail.contract == null ? '' : DateFormat('dd/MM/yyyy')
-                                        .format(detail.contract.endDate),
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
               ],
             ),

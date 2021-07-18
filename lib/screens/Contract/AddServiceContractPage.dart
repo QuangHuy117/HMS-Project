@@ -8,48 +8,59 @@ import 'package:house_management_project/models/ServiceContracts.dart';
 import 'package:http/http.dart' as http;
 
 class AddServiceContractPage extends StatefulWidget {
-  final List<ServiceContracts> listServiceContract;
+  // final List<ServiceContracts> listServiceContract;
+  final List<Service> listServiceContract;
   final String houseId;
-  const AddServiceContractPage({Key key, @required this.listServiceContract, @required this.houseId}) : super(key: key);
+  const AddServiceContractPage(
+      {Key key, @required this.listServiceContract, @required this.houseId})
+      : super(key: key);
 
   @override
   _AddServiceContractPageState createState() => _AddServiceContractPageState();
 }
 
 class _AddServiceContractPageState extends State<AddServiceContractPage> {
-
   List<Service> listService = [];
-  List<ServiceContracts> list = [];
+  List<Service> list = [];
+  List<bool> _isCheck = [];
 
-  getListServiceHouse() async {
-    var url =
-        Uri.parse('https://$serverHost/api/houses/${widget.houseId}');
+  Future<List<Service>> getListServiceHouse() async {
+    list.clear();
+    var url = Uri.parse('https://$serverHost/api/houses/${widget.houseId}');
     try {
       var response = await http.get(url);
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
         for (var i in jsonData['services']) {
-            listService.add(Service.fromJson(i));
+          listService.add(Service.fromJson(i));
         }
+        bool find;
         for (var u in listService) {
+          // print("ServiceId: " + u.id.toString());
+          find = false;
           for (var i in widget.listServiceContract) {
-            if (i.service.id != u.id) {
-              list.add(i);
+            // print("ServiceContract_ServiceId: " + i.id.toString());
+            if (u.id == i.id) {
+              find = true;
+              break;
             }
           }
+          if (find == false) {
+            list.add(u);
+            print("New ServiceId: " + u.id.toString());
+          }
         }
-        print(list.length);
+        return list;
       }
     } catch (error) {
       throw (error);
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getListServiceHouse();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +78,7 @@ class _AddServiceContractPageState extends State<AddServiceContractPage> {
           automaticallyImplyLeading: false,
           leading: GestureDetector(
               onTap: () {
-                Navigator.pop(context);
+                Navigator.pop(context, widget.listServiceContract);
               },
               child: Icon(
                 MyFlutterApp.left,
@@ -76,14 +87,70 @@ class _AddServiceContractPageState extends State<AddServiceContractPage> {
               )),
         ),
         body: Container(
-          child: ListView.builder(itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(widget.listServiceContract[index].service.name),
-            );
-          },
-          itemCount: widget.listServiceContract.length,
-          ),
-        ),
+            height: size.height * 0.5,
+            width: size.width,
+            child: FutureBuilder<List<Service>>(
+              future: getListServiceHouse(), // async work
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<Service>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return snapshot.data.length == 0
+                      ? Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Không có dịch vụ để thêm !!!',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w600),
+                          ))
+                      : Container(
+                          width: size.width,
+                          height: size.height * 0.5,
+                          child: ListView.builder(
+                            itemBuilder: (context, index) {
+                              _isCheck.add(false);
+                              return CheckboxListTile(
+                                  value: _isCheck[index],
+                                  title: Text('${snapshot.data[index].name}'),
+                                  // Text('${list[index].name}'),
+                                  subtitle: Text(
+                                      '${snapshot.data[index].price} / ${snapshot.data[index].calculationUnit}'),
+                                  // Text(
+                                  //     '${list[index].price} / ${list[index].calculationUnit}'),
+                                  activeColor: Colors.green,
+                                  checkColor: Colors.black,
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      _isCheck[index] = value;
+                                      if (value == true) {
+                                        widget.listServiceContract
+                                            .add(snapshot.data[index]);
+                                        snapshot.data
+                                            .remove(snapshot.data[index]);
+                                      }
+                                    });
+                                  });
+                            },
+                            itemCount: snapshot.data.length,
+                          ),
+                        );
+                } else {
+                  return Center(
+                      child: SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: CircularProgressIndicator()));
+                }
+                // switch (snapshot.connectionState) {
+                //   case ConnectionState.waiting:
+                //     return Text('Loading....');
+                //   default:
+                //     if (snapshot.hasError)
+                //       return Text('Error: ${snapshot.error}');
+                //     else
+                //       return
+                // }
+              },
+            )),
       ),
     );
   }

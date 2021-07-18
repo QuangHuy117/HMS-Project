@@ -1,17 +1,23 @@
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/main.dart';
 import 'package:house_management_project/models/Bill.dart';
 import 'package:house_management_project/screens/Room/RoomNavigationBar.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class DisplayBillPage extends StatefulWidget {
   final dynamic bill;
   final String houseId;
-  const DisplayBillPage({Key key, 
-  @required this.bill, 
-  @required this.houseId,}) : super(key: key);
+  const DisplayBillPage({
+    Key key,
+    @required this.bill,
+    @required this.houseId,
+  }) : super(key: key);
 
   @override
   _DisplayBillPageState createState() => _DisplayBillPageState();
@@ -24,6 +30,7 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
   int _totalPrice = 0;
   TextEditingController note = new TextEditingController();
   var format = NumberFormat('#,###,000');
+  String responseMsg = '';
 
   getBillData() async {
     bill = Bill.fromJson(widget.bill);
@@ -31,6 +38,30 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
       _totalPrice += u.totalPrice;
     }
     print(bill);
+  }
+
+  Future confirmBill(BuildContext context) async {
+    dynamic token = await FlutterSession().get("token");
+    var jsonData = null;
+    var url = Uri.parse('https://$serverHost/api/bills/confirm?id=${bill.id}');
+    try {
+      var response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}'
+        },
+      );
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        jsonData = response.body;
+        responseMsg = 'Xác nhận hóa đơn thành công';
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (_) => RoomNavigationBar(houseId: widget.houseId)));
+      }
+    } catch (error) {
+      throw (error);
+    }
   }
 
   @override
@@ -124,26 +155,29 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
                         height: 20,
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                         height: size.height * 0.4,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.grey.shade50, Colors.grey.shade50],
-                            stops: [0.4, 0.8],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.grey.shade50,
+                                Colors.grey.shade50
+                              ],
+                              stops: [0.4, 0.8],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 5,
-                              spreadRadius: 2,
-                              offset: Offset(2, 2),
-                            ),
-                          ],
-                          borderRadius: BorderRadius.circular(15),
-                          color: Colors.white
-                        ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 5,
+                                spreadRadius: 2,
+                                offset: Offset(2, 2),
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.white),
                         child: ListView.builder(
                           itemBuilder: (context, index) {
                             _isOpen.add(false);
@@ -406,7 +440,15 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
                                         fontWeight: FontWeight.w700),
                                   ),
                                   onPressed: () {
-                                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => RoomNavigationBar(houseId: widget.houseId)));
+                                    confirmBill(context).then(
+                                      (value) => ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        content: Text(
+                                          responseMsg,
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                      )),
+                                    );
                                   },
                                 ),
                               ),

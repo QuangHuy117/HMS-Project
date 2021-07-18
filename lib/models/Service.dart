@@ -4,7 +4,7 @@ class Service{
   String name;
   String calculationUnit;
   bool status;
-  double price;
+  int price;
   String serviceType;
 
   Service({
@@ -21,7 +21,7 @@ class Service{
     name: json['name'],
     calculationUnit: json['calculationUnit'],
     status: json['status'],
-    price: double.parse(json['price'].toString()),
+    price: int.parse(json['price'].toString()),
     serviceType: json['serviceType'],
   );
 

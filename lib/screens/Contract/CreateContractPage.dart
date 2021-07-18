@@ -3,73 +3,72 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
-import 'package:house_management_project/main.dart';
-import 'package:house_management_project/models/Contract.dart';
 import 'package:house_management_project/models/Service.dart';
-import 'package:house_management_project/models/ServiceContracts.dart';
 import 'package:house_management_project/models/User.dart';
 import 'package:house_management_project/screens/Contract/AddServiceContractPage.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
-class ContractDetailPage extends StatefulWidget {
-  final int contractId;
+import '../../main.dart';
+
+class CreateContractPage extends StatefulWidget {
   final String houseId;
-  const ContractDetailPage(
-      {Key key, @required this.contractId, @required this.houseId})
-      : super(key: key);
+  final String roomName;
+  final int roomId;
+  const CreateContractPage({Key key, @required this.houseId, @required this.roomName, @required this.roomId}) : super(key: key);
 
   @override
-  _ContractDetailPageState createState() => _ContractDetailPageState();
+  _CreateContractPageState createState() => _CreateContractPageState();
 }
 
-class _ContractDetailPageState extends State<ContractDetailPage> {
-  Contract contract = new Contract();
-  bool _isEdit = false;
+class _CreateContractPageState extends State<CreateContractPage> {
+  
   List<bool> _isOpen = [];
+  String userId = '';
   List<TextEditingController> _controllers = [];
   String houseName, ownerName, roomName;
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
-  TextEditingController startDatePicked, endDatePicked, custName, elecNum, waterNum;
-  // TextEditingController name = new TextEditingController();
-  List<ServiceContracts> listServiceContract = [];
+  TextEditingController startDatePicked = new TextEditingController();
+  TextEditingController endDatePicked = new TextEditingController();
+  TextEditingController custName = new TextEditingController();
+  TextEditingController name = new TextEditingController();
   List<Service> listService = [];
-  bool _isLoading = true;
+  Map<String, dynamic> serviceContractData = new Map();
+  List<Map<String, dynamic>> listMap = [];
 
-  getContractDetail() async {
-    var url =
-        Uri.parse('https://$serverHost/api/contracts/${widget.contractId}');
-    try {
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body);
-        setState(() {
-          contract = Contract.fromJson(jsonData);
-          for (var i in contract.serviceContracts) {
-            listServiceContract.add(i);
-            listService.add(i.service);
-          }
-          houseName = jsonData['houseName'];
-          roomName = jsonData['roomName'];
-          ownerName = jsonData['ownerName'];
-          custName = new TextEditingController(
-              text: contract.tenant == null ? '' : contract.tenant.name);
-          startDatePicked = new TextEditingController(
-              text: contract.startDate == null
-                  ? ''
-                  : DateFormat('dd/MM/yyyy').format(contract.startDate));
-          endDatePicked = new TextEditingController(
-              text: contract.endDate == null
-                  ? ''
-                  : DateFormat('dd/MM/yyyy').format(contract.endDate));
-            _isLoading = false;
-        });
-      }
-    } catch (error) {
-      throw (error);
+
+  
+  getData(String clockValue, int serviceId, int price) async {
+    serviceContractData = {
+      "serviceId": serviceId,
+      "unitPrice": price,
+      "startClockValue": int.parse(clockValue),
+    };
+    // listMap.map((e) {
+    //    if(e.keys.contains('serviceId') && e.values.contains(serviceId)) {
+    //      listMap.r
+    //    }
+    //   print(e.values);
+    // });
+  }
+
+  _selectedDateTime(
+      BuildContext context, DateTime date, TextEditingController text) async {
+    var _pickedDate = await showDatePicker(
+        context: context,
+        initialDate: date,
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2025));
+
+    if (_pickedDate != null) {
+      setState(() {
+        date = _pickedDate;
+        text.text = DateFormat('dd/MM/yyyy').format(_pickedDate);
+      });
     }
   }
+
 
   Future<List<User>> getListUser(String query) async {
     var url = Uri.parse('https://$serverHost/api/accounts');
@@ -90,7 +89,7 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
     }
   }
 
-  Future getMoreService(BuildContext context) async {
+Future getMoreService(BuildContext context) async {
     var result = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -111,27 +110,6 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
     });
   }
 
-  _selectedDateTime(
-      BuildContext context, DateTime date, TextEditingController text) async {
-    var _pickedDate = await showDatePicker(
-        context: context,
-        initialDate: date,
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2025));
-
-    if (_pickedDate != null) {
-      setState(() {
-        date = _pickedDate;
-        text.text = DateFormat('dd/MM/yyyy').format(_pickedDate);
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getContractDetail();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +119,7 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
         appBar: AppBar(
           elevation: 0,
           title: Text(
-            'Hợp đồng',
+            'Tạo Hợp đồng',
             style: TextStyle(
                 color: Colors.white, fontSize: 22, fontWeight: FontWeight.w700),
           ),
@@ -172,17 +150,10 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Thông tin chi tiết',
+                            'Nhập thông tin',
                             style: TextStyle(
                                 fontSize: 22,
                                 color: Colors.black87,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            ownerName == null ? 'N/A' : 'Người tạo: $ownerName',
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: PrimaryColor,
                                 fontWeight: FontWeight.w600),
                           ),
                         ],
@@ -197,17 +168,13 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
                             color: Colors.black54,
                             size: 30,
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            houseName == null && roomName == null
-                                ? 'N/A'
-                                : 'Nhà: ' '$houseName' + '- ' + '$roomName',
-                            style: TextStyle(
+                          SizedBox(width: 10,),
+                          Text('${widget.roomName}', style: TextStyle(
                                 fontSize: 20,
                                 color: PrimaryColor,
-                                fontWeight: FontWeight.w600),
+                                fontWeight: FontWeight.w600),),
+                          SizedBox(
+                            width: 10,
                           ),
                         ],
                       ),
@@ -223,52 +190,25 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
                               size: 30,
                             ),
                             onTap: () {
-                              _isEdit = true;
                               _selectedDateTime(
                                   context, _startDate, startDatePicked);
                             },
                           ),
                           Container(
                             width: size.width * 0.68,
-                            child: _isEdit
-                                ? Container(
-                                    margin:
-                                        EdgeInsets.only(bottom: 10, left: 10),
-                                    width: size.width * 0.68,
-                                    child: TextField(
-                                      controller: startDatePicked,
-                                      style: TextStyle(
-                                          color: Colors.blue, fontSize: 20),
-                                      decoration: InputDecoration(
-                                        hintText: 'Ngày thuê',
-                                        hintStyle: TextStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                  )
-                                : Container(
-                                    width: size.width * 0.68,
-                                    height: size.height * 0.061,
-                                    alignment: Alignment.centerLeft,
-                                    margin: EdgeInsets.only(left: 10),
-                                    child: GestureDetector(
-                                      child: Text(
-                                        contract.startDate == null
-                                            ? 'N/A'
-                                            : 'Ngày thuê: ' +
-                                                DateFormat('dd/MM/yyyy')
-                                                    .format(contract.startDate),
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            color: PrimaryColor,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      onTap: () {
-                                        setState(() {
-                                          _isEdit = true;
-                                        });
-                                      },
-                                    ),
-                                  ),
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: 10, left: 10),
+                              width: size.width * 0.68,
+                              child: TextField(
+                                controller: startDatePicked,
+                                style:
+                                    TextStyle(color: Colors.blue, fontSize: 20),
+                                decoration: InputDecoration(
+                                  hintText: 'Ngày thuê',
+                                  hintStyle: TextStyle(fontSize: 20),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -281,52 +221,25 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
                               size: 30,
                             ),
                             onTap: () {
-                              _isEdit = true;
                               _selectedDateTime(
                                   context, _endDate, endDatePicked);
                             },
                           ),
                           Container(
                             width: size.width * 0.68,
-                            child: _isEdit
-                                ? Container(
-                                    margin:
-                                        EdgeInsets.only(bottom: 10, left: 10),
-                                    width: size.width * 0.68,
-                                    child: TextField(
-                                      controller: endDatePicked,
-                                      style: TextStyle(
-                                          color: Colors.blue, fontSize: 20),
-                                      decoration: InputDecoration(
-                                        hintText: 'Ngày hết hạn',
-                                        hintStyle: TextStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                  )
-                                : Container(
-                                    width: size.width * 0.68,
-                                    height: size.height * 0.06,
-                                    alignment: Alignment.centerLeft,
-                                    margin: EdgeInsets.only(left: 10),
-                                    child: GestureDetector(
-                                      child: Text(
-                                        contract.endDate == null
-                                            ? 'N/A'
-                                            : 'Ngày hết hạn: ' +
-                                                DateFormat('dd/MM/yyyy')
-                                                    .format(contract.endDate),
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            color: PrimaryColor,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      onTap: () {
-                                        setState(() {
-                                          _isEdit = true;
-                                        });
-                                      },
-                                    ),
-                                  ),
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: 10, left: 10),
+                              width: size.width * 0.68,
+                              child: TextField(
+                                controller: endDatePicked,
+                                style:
+                                    TextStyle(color: Colors.blue, fontSize: 20),
+                                decoration: InputDecoration(
+                                  hintText: 'Ngày hết hạn',
+                                  hintStyle: TextStyle(fontSize: 20),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -339,60 +252,37 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
                           ),
                           Container(
                             width: size.width * 0.68,
-                            child: _isEdit || contract.tenant == null
-                                ? Container(
-                                    margin: EdgeInsets.only(left: 10),
-                                    child: TypeAheadField<User>(
-                                      textFieldConfiguration:
-                                          TextFieldConfiguration(
-                                        controller: custName,
-                                        style: TextStyle(
-                                            color: Colors.blue, fontSize: 20),
-                                        decoration: InputDecoration(
-                                            hintText: 'Tên khách'),
-                                      ),
-                                      suggestionsCallback: (pattern) async {
-                                        return await getListUser(pattern);
-                                      },
-                                      itemBuilder: (context, user) {
-                                        return ListTile(
-                                          leading: Image.network(
-                                            user.image,
-                                            fit: BoxFit.cover,
-                                          ),
-                                          title: Text(user.name),
-                                          subtitle: Text('${user.email}'),
-                                        );
-                                      },
-                                      onSuggestionSelected: (user) {
-                                        setState(() {
-                                          custName.text = user.name;
-                                        });
-                                      },
+                            child: Container(
+                              margin: EdgeInsets.only(left: 10),
+                              child: TypeAheadField<User>(
+                                textFieldConfiguration: TextFieldConfiguration(
+                                  controller: custName,
+                                  style: TextStyle(
+                                      color: Colors.blue, fontSize: 20),
+                                  decoration:
+                                      InputDecoration(hintText: 'Tên khách'),
+                                ),
+                                suggestionsCallback: (pattern) async {
+                                  return await getListUser(pattern);
+                                },
+                                itemBuilder: (context, user) {
+                                  userId = user.userId;
+                                  return ListTile(
+                                    leading: Image.network(
+                                      user.image,
+                                      fit: BoxFit.cover,
                                     ),
-                                  )
-                                : Container(
-                                    height: size.height * 0.05,
-                                    alignment: Alignment.centerLeft,
-                                    margin: EdgeInsets.only(left: 10),
-                                    child: GestureDetector(
-                                      child: Text(
-                                        contract.tenant == null
-                                            ? 'N/A'
-                                            : 'Khách hàng: ' +
-                                                contract.tenant.name,
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            color: PrimaryColor,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      onTap: () {
-                                        setState(() {
-                                          _isEdit = true;
-                                        });
-                                      },
-                                    ),
-                                  ),
+                                    title: Text(user.name),
+                                    subtitle: Text('${user.email}'),
+                                  );
+                                },
+                                onSuggestionSelected: (user) {
+                                  setState(() {
+                                    custName.text = user.name;
+                                  });
+                                },
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -409,13 +299,7 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
                 SizedBox(
                   height: 10,
                 ),
-                _isLoading ? Container(
-                  alignment: Alignment.center,
-                          child: SizedBox(
-                              width: 30,
-                              height: 30,
-                              child: CircularProgressIndicator()))
-                : Container(
+                Container(
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   width: size.width,
                   child: Column(
@@ -679,8 +563,8 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
                                                                             0.12,
                                                                         height: size.height *
                                                                             0.03,
-                                                                        child: _isEdit
-                                                                            ? TextField(
+                                                                        child: 
+                                                                          TextField(
                                                                                 controller: _controllers[index],
                                                                                 keyboardType: TextInputType.number,
                                                                                 textAlign: TextAlign.right,
@@ -690,32 +574,11 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
                                                                                 ),
                                                                                 onSubmitted: (value) {
                                                                                   _controllers[index].text = value;
-                                                                                  // getData(
-                                                                                  //     _controllers[index]
-                                                                                  //         .text,
-                                                                                  //     listService[index]
-                                                                                  //         .id,
-                                                                                  //     listService[index]
-                                                                                  //         .contractId);
+                                                                                  getData(
+                                                                                      _controllers[index].text, listService[index].id,
+                                                                                      listService[index].price);
                                                                                 },
                                                                               )
-                                                                            : Container(
-                                                                                height: size.height * 0.05,
-                                                                                // alignment: Alignment.centerLeft,
-                                                                                margin: EdgeInsets.only(left: 10),
-                                                                                child: GestureDetector(
-                                                                                  child: Text(
-                                                                                    // contract.tenant == null ? '' : 'Khách hàng: ' + contract.tenant.name,
-                                                                                    '540',
-                                                                                    style: TextStyle(fontSize: 20, color: PrimaryColor, fontWeight: FontWeight.w600),
-                                                                                  ),
-                                                                                  onTap: () {
-                                                                                    setState(() {
-                                                                                      _isEdit = true;
-                                                                                    });
-                                                                                  },
-                                                                                ),
-                                                                              ),
                                                                       )
                                                                     ],
                                                                   ))
@@ -744,8 +607,6 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
                                                       listService[index]
                                                           .status = value;
                                                       if (value == false) {
-                                                        // listService.remove(
-                                                        //     listService[index]);
                                                         print(listService[index]
                                                             .status);
                                                         print(listService[index]
@@ -775,25 +636,46 @@ class _ContractDetailPageState extends State<ContractDetailPage> {
                     ],
                   ),
                 ),
-                _isEdit
-                    ? TextButton(
-                        onPressed: () {
-                          var list = startDatePicked.text.split("/");
-                          String test = list[2] + "-" + list[1] + "-" + list[0];
-                          DateTime time = DateTime.parse(test);
-                          String startDateTest =
-                              new DateFormat('yyyy-MM-dd').format(time);
-                          print(startDateTest);
-                          list = endDatePicked.text.split("/");
-                          test = list[2] + "-" + list[1] + "-" + list[0];
-                          time = DateTime.parse(test);
-                          String endDateTest =
-                              new DateFormat('yyyy-MM-dd').format(time);
-                          print(endDateTest);
-                        },
-                        child: Text('Luu'),
-                      )
-                    : Container(),
+                SizedBox(height: 20,),
+                Container(
+                  width: size.width * 0.2,
+                  height: size.height * 0.045,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: PrimaryColor,
+                      ),
+                      child: Text(
+                        'Lưu',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700),
+                      ),
+                      onPressed: () {
+                        // try {
+                        var list = startDatePicked.text.split("/");
+                        String test = list[2] + "-" + list[1] + "-" + list[0];
+                        DateTime time = DateTime.parse(test);
+                        String startDateTest =
+                            new DateFormat('yyyy-MM-dd').format(time);
+                        print(startDateTest);
+                        list = endDatePicked.text.split("/");
+                        test = list[2] + "-" + list[1] + "-" + list[0];
+                        time = DateTime.parse(test);
+                        String endDateTest =
+                            new DateFormat('yyyy-MM-dd').format(time);
+                        print(endDateTest);
+                        print(userId);
+                        print(listMap);
+                        // } catch (e) {
+                        //   print(e.toString());
+                        // }
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
