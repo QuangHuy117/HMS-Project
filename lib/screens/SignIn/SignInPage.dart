@@ -24,6 +24,7 @@ class _SignInPageState extends State<SignInPage> {
   TextEditingController password = new TextEditingController();
   bool showPass = false;
   String showErr = "";
+  bool _isLoading = false;
   final auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
@@ -113,7 +114,10 @@ class _SignInPageState extends State<SignInPage> {
                             ),
                           ),
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => ForgotPasswordPage()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => ForgotPasswordPage()));
                           },
                         ),
                       ],
@@ -131,54 +135,98 @@ class _SignInPageState extends State<SignInPage> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
+                  // Container(
+                  //   margin: EdgeInsets.symmetric(
+                  //     vertical: 20,
+                  //   ),
+                  //   child: RoundedButton(
+                  //     text: 'Đăng nhập',
+                  //     press: onSignInClicked,
+                  //   ),
+                  // ),
                   Container(
-                    margin: EdgeInsets.symmetric(
+                    width: size.width * 0.7,
+                     margin: EdgeInsets.symmetric(
                       vertical: 20,
                     ),
-                    child: RoundedButton(
-                      text: 'Đăng nhập',
-                      press: onSignInClicked,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 5,
+                            offset: const Offset(0, 5),
+                          )
+                        ]),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30.0),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          backgroundColor: PrimaryColor,
+                        ),
+                        child: _isLoading ? Container(
+                          height: 30,
+                          width: 30,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
+                        )
+                        : Text(
+                          'Đăng nhập',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isLoading = true;
+                            onSignInClicked();
+                          });
+                        },
+                      ),
                     ),
                   ),
                   Container(
-                      width: size.width * 0.7,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text(
-                            '----------------------------',
-                            style: TextStyle(color: Color(0xFF707070)),
-                          ),
-                          Text(
-                            'HOẶC',
-                            style: TextStyle(
-                                color: PrimaryColor,
-                                fontWeight: FontWeight.w700),
-                          ),
-                          Text(
-                            '----------------------------',
-                            style: TextStyle(color: Color(0xFF707070)),
-                          ),
-                        ],
-                      ),
+                    width: size.width * 0.7,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          '----------------------------',
+                          style: TextStyle(color: Color(0xFF707070)),
+                        ),
+                        Text(
+                          'HOẶC',
+                          style: TextStyle(
+                              color: PrimaryColor, fontWeight: FontWeight.w700),
+                        ),
+                        Text(
+                          '----------------------------',
+                          style: TextStyle(color: Color(0xFF707070)),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 20,),
-                    Container(
-                      width: 45,
-                      height: 45,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(),
-                      ),
-                      child: GestureDetector(
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    width: 45,
+                    height: 45,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(),
+                    ),
+                    child: GestureDetector(
                         child: Icon(
                           MyFlutterApp.gplus,
                           color: PrimaryColor,
                         ),
-                        onTap: () => signInWithGoogle()
-                      ),
-                    ),
+                        onTap: () => signInWithGoogle()),
+                  ),
                   Container(
                     margin: EdgeInsets.only(
                       top: 20,
@@ -247,7 +295,6 @@ class _SignInPageState extends State<SignInPage> {
     AuthCredential authCredential = GoogleAuthProvider.credential(
         idToken: googleSignInAuthentication.idToken,
         accessToken: googleSignInAuthentication.accessToken);
-        
 
     // ignore: unused_local_variable
     UserCredential authResult = await auth.signInWithCredential(authCredential);
@@ -256,7 +303,7 @@ class _SignInPageState extends State<SignInPage> {
 
     print(authResult.user.getIdToken().then((value) => print("-----" + value)));
 
-    // print(user.providerData.first.providerId); 
+    // print(user.providerData.first.providerId);
   }
 
   _signIn(String email, String password) async {
@@ -266,9 +313,8 @@ class _SignInPageState extends State<SignInPage> {
       var idToken = await user.user.getIdToken();
       print(idToken);
       var jsonData = null;
-      var url = Uri.parse(
-          'https://$serverHost/api/accounts/authenticate');
-          print(url);
+      var url = Uri.parse('https://$serverHost/api/accounts/authenticate');
+      print(url);
       var response = await http.post(
         url,
         headers: <String, String>{
@@ -291,14 +337,16 @@ class _SignInPageState extends State<SignInPage> {
         await session.set("role", jsonData['role']);
         await session.set("token", jsonData['token']);
 
+        _isLoading = false;
         if (jsonData['role'] == 'Chủ trọ') {
           Navigator.pushAndRemoveUntil(context,
-            MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
+              MaterialPageRoute(builder: (_) => HomePage()), (route) => false);
         } else {
-          Navigator.pushAndRemoveUntil(context,
-            MaterialPageRoute(builder: (_) => TenantHomePage()), (route) => false);
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => TenantHomePage()),
+              (route) => false);
         }
-        
       }
     } on FirebaseAuthException catch (e) {
       print(e.code);

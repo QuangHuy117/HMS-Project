@@ -21,6 +21,7 @@ class ListRoomNotUsing extends StatefulWidget {
 
 class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
   List<Room> listRoom = [];
+  String responseMsg = "";
 
   getRoomsByHouseId() async {
     listRoom.clear();
@@ -31,6 +32,36 @@ class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
       if (response.statusCode == 200) {
         setState(() {
           listRoom = roomFromJson(response.body);
+        });
+      }
+    } catch (error) {
+      throw (error);
+    }
+  }
+
+  deleteRoom(int id) async {
+    var url = Uri.parse('https://$serverHost/api/rooms?id=$id');
+    try {
+      var response = await http.delete(url);
+      if (response.statusCode == 200) {
+        setState(() {
+          responseMsg = 'Xóa phòng thành công';
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              responseMsg,
+              style: TextStyle(fontSize: 20),
+            ),
+          ));
+        });
+      } else {
+        setState(() {
+          responseMsg = 'Không thể xóa phòng đang thuê';
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              responseMsg,
+              style: TextStyle(fontSize: 20),
+            ),
+          ));
         });
       }
     } catch (error) {
@@ -56,7 +87,7 @@ class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
           child: ListView.builder(
             itemBuilder: (context, index) {
               return Container(
-                height: size.height * 0.2,
+                height: size.height * 0.18,
                 padding: EdgeInsets.symmetric(
                   horizontal: 20,
                 ),
@@ -65,243 +96,174 @@ class _ListRoomNotUsingState extends State<ListRoomNotUsing> {
                 ),
                 child: Slidable(
                   actionPane: SlidableDrawerActionPane(),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(40),
-                          bottomLeft: Radius.circular(40),
-                          topRight: Radius.circular(5),
-                          bottomRight: Radius.circular(5)),
-                    ),
-                    elevation: 5,
-                    shadowColor: Colors.black,
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          top: 40,
-                          left: 5,
-                          child: Icon(
-                            MyFlutterApp.home,
-                            color: PrimaryColor,
-                            size: 60,
+                  child: GestureDetector(
+                    onTap: () {
+                      if (listRoom[index].contract == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                            'Phòng này chưa có hóa đơn',
+                            style: TextStyle(fontSize: 20),
                           ),
-                        ),
-                        Positioned(
-                          top: 20,
-                          left: 65,
-                          child: Container(
-                            width: size.width * 0.6,
-                            padding: EdgeInsets.only(
-                              right: 10,
+                        ));
+                      } else {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => BillHistoryPage(
+                                      contractId: listRoom[index].contract.id,
+                                    )));
+                      }
+                    },
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(40),
+                            bottomLeft: Radius.circular(40),
+                            topRight: Radius.circular(5),
+                            bottomRight: Radius.circular(5)),
+                      ),
+                      elevation: 5,
+                      shadowColor: Colors.black,
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: 50,
+                            left: 5,
+                            child: Icon(
+                              Icons.meeting_room,
+                              color: PrimaryColor,
+                              size: 60,
                             ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Tên phòng : ',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    Text(
-                                      '${listRoom[index].name}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
+                          ),
+                          Positioned(
+                            top: 20,
+                            left: 65,
+                            child: Container(
+                              width: size.width * 0.6,
+                              padding: EdgeInsets.only(
+                                right: 10,
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Tên phòng : ',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Tên khách : ',
-                                      style: TextStyle(
+                                      Text(
+                                        '${listRoom[index].name}',
+                                        style: TextStyle(
                                           fontSize: 16,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    Text(
-                                      '${listRoom[index].contract == null ? 'Trống' : listRoom[index].contract.tenant.name}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Ngày thuê : ',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    Text(
-                                      '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.startDate)}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Ngày hết hạn : ',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    Text(
-                                      '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.endDate)}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      margin:
-                                          EdgeInsets.only(right: 20, left: 25),
-                                      width: size.width * 0.2,
-                                      height: size.height * 0.045,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        child: TextButton(
-                                          style: TextButton.styleFrom(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 5),
-                                            backgroundColor: PrimaryColor,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              Icon(
-                                                MyFlutterApp.cog,
-                                                color: Colors.black87,
-                                              ),
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text(
-                                                'Quản lý',
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w700),
-                                              ),
-                                            ],
-                                          ),
-                                          onPressed: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        RoomSettingPage(
-                                                          roomId:
-                                                              listRoom[index]
-                                                                  .id,
-                                                          houseId:
-                                                              widget.houseId,
-                                                        )));
-                                          },
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                    ),
-                                    Container(
-                                      margin: EdgeInsets.only(left: 10),
-                                      width: size.width * 0.21,
-                                      height: size.height * 0.045,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        child: TextButton(
-                                          style: TextButton.styleFrom(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 5),
-                                            backgroundColor: PrimaryColor,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              Icon(
-                                                MyFlutterApp.clipboard,
-                                                color: Colors.black87,
-                                              ),
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text(
-                                                'Hóa đơn',
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w700),
-                                              ),
-                                            ],
-                                          ),
-                                          onPressed: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        BillHistoryPage(
-                                                          contractId:
-                                                              listRoom[index]
-                                                                  .contract
-                                                                  .id,
-                                                        )));
-                                          },
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Tên khách : ',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                      Text(
+                                        '${listRoom[index].contract == null ? 'Trống' : listRoom[index].contract.tenant.name}',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Ngày thuê : ',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                      Text(
+                                        '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.startDate)}',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Ngày hết hạn : ',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                      Text(
+                                        '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.endDate)}',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          top: 10,
-                          right: 10,
-                          child: Text(
-                            '${listRoom[index].status ? '' : 'Chưa thuê'}',
-                            style: TextStyle(
-                              color: listRoom[index].status
-                                  ? PrimaryColor
-                                  : Color(0xFF707070),
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
+                          Positioned(
+                            bottom: 10,
+                            right: 10,
+                            child: GestureDetector(
+                              child: Icon(
+                                MyFlutterApp.cog,
+                                color: PrimaryColor,
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => RoomSettingPage(
+                                              roomId: listRoom[index].id,
+                                              houseId: widget.houseId,
+                                            )));
+                              },
                             ),
                           ),
-                        ),
-                      ],
+                          Positioned(
+                            top: 10,
+                            right: 10,
+                            child: Text(
+                              '${listRoom[index].status ? '' : 'Chưa thuê'}',
+                              style: TextStyle(
+                                color: listRoom[index].status
+                                    ? PrimaryColor
+                                    : Color(0xFF707070),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   secondaryActions: [

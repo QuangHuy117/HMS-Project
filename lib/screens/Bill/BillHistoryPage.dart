@@ -20,6 +20,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
   String valueChoose;
   List listItem = ['Tất cả', 'Đã thanh toán', 'Chưa thanh toán'];
   var _currentItemSelected = 'Tất cả';
+  bool _isLoading = true;
 
   getList(String value) async {
     if (value == 'Tất cả') {
@@ -32,6 +33,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
         print(response.body);
         setState(() {
           listBill = billFromJson(response.body);
+          _isLoading = false;
           print(listBill);
         });
       }
@@ -48,6 +50,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
         print(response.body);
         setState(() {
           listBill = billFromJson(response.body);
+          _isLoading = false;
           print(listBill);
         });
       }
@@ -64,6 +67,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
         print(response.body);
         setState(() {
           listBill = billFromJson(response.body);
+          _isLoading = false;
           print(listBill);
         });
       }
@@ -143,14 +147,24 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                               getList(this._currentItemSelected);
                             });
                           },
-                           
                            value: _currentItemSelected,
                           ),
                     ),
                   ],
                 ),
               ),
-              Container(
+              widget.contractId == null ? Center(
+                child: Text('Chưa có hóa đơn'),
+              )
+              : _isLoading ? Center(
+                child: Container(
+                alignment: Alignment.bottomCenter,
+                height: 50,
+                width: 50,
+                child: CircularProgressIndicator(),
+              ),
+              )
+              : Container(
                 height: size.height * 0.83,
                 width: size.width,
                 padding: EdgeInsets.only(top: 10, right: 20, left: 20),

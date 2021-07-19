@@ -1,28 +1,61 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:house_management_project/components/TextInput.dart';
 import 'package:house_management_project/main.dart';
 import 'package:house_management_project/screens/Room/ListRoomNotUsing.dart';
 import 'package:house_management_project/screens/Room/ListRoomUsing.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
+import 'package:http/http.dart' as http;
 
 class RoomPage extends StatefulWidget {
   final String houseId;
-  RoomPage({Key key, 
-  @required this.houseId,})
-      : super(key: key);
+  RoomPage({
+    Key key,
+    @required this.houseId,
+  }) : super(key: key);
 
   @override
   _RoomPageState createState() => _RoomPageState();
 }
 
 class _RoomPageState extends State<RoomPage> {
-
   String showErr = "";
   TextEditingController name = new TextEditingController();
+  TextEditingController price = new TextEditingController();
+  TextEditingController square = new TextEditingController();
+  String responseMsg = '';
 
-  createRoom() async {
-    
+  Future createRoom(String roomSquare, String price, String roomName) async {
+    dynamic token = await FlutterSession().get("token");
+    try {
+      var jsonData = null;
+      var url = Uri.parse('https://$serverHost/api/rooms');
+      var response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}',
+        },
+        body: jsonEncode({
+          "roomSquare": int.parse(roomSquare),
+          "defaultPrice": int.parse(price),
+          "houseId": widget.houseId,
+          "name": roomName
+        }),
+      );
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        jsonData = response.body;
+        responseMsg = 'Tạo phòng thành công';
+        Navigator.pop(context);
+      }
+    } catch (error) {
+      throw (error);
+    }
   }
 
   @override
@@ -105,7 +138,10 @@ class _RoomPageState extends State<RoomPage> {
                         topRight: Radius.circular(5),
                       ),
                     ),
-                    builder: (context) => Padding(
+                    builder: (context) {
+                      return StatefulBuilder(builder:
+                          (BuildContext context, StateSetter stateModel) {
+                        return Padding(
                           padding: EdgeInsets.symmetric(vertical: 15),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -124,14 +160,30 @@ class _RoomPageState extends State<RoomPage> {
                               TextInput(
                                 text: 'Nhập tên phòng',
                                 hidePass: false,
-                                // controller: name,
+                                controller: name,
                               ),
                               SizedBox(
                                 height: 10,
                               ),
-                              Text(showErr.isEmpty ? '' : showErr),
+                              TextInput(
+                                text: 'Nhập giá dự kiến',
+                                hidePass: false,
+                                controller: price,
+                              ),
+                              TextInput(
+                                text: 'Nhập diện tích phòng',
+                                hidePass: false,
+                                controller: square,
+                              ),
+                              Text(
+                                showErr.isEmpty ? '' : showErr,
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red),
+                              ),
                               SizedBox(
-                                height: 10,
+                                height: 15,
                               ),
                               TextButton(
                                 style: TextButton.styleFrom(
@@ -145,11 +197,23 @@ class _RoomPageState extends State<RoomPage> {
                                       color: Colors.white, fontSize: 16),
                                 ),
                                 onPressed: () {
-                                  setState(() {
-                                    if (name.text.isEmpty) {
-                                      showErr =
-                                          'Tên không được trống !!!';
-                                    } else {}
+                                  stateModel(() {
+                                    if (name.text.isEmpty ||
+                                        price.text.isEmpty ||
+                                        square.text.isEmpty) {
+                                      showErr = 'Thông tin không được trống !!!';
+                                    } else {
+                                      createRoom(square.text, price.text, name.text).then((value) => {
+                                        ScaffoldMessenger.of(context)
+                                                    .showSnackBar(SnackBar(
+                                                  content: Text(
+                                                    responseMsg,
+                                                    style:
+                                                        TextStyle(fontSize: 20),
+                                                  ),
+                                                )),
+                                      });
+                                    }
                                   });
                                 },
                               ),
@@ -160,7 +224,9 @@ class _RoomPageState extends State<RoomPage> {
                               )),
                             ],
                           ),
-                        ));
+                        );
+                      });
+                    });
               },
               backgroundColor: PrimaryColor,
               child: Icon(

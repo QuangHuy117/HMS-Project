@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/models/Service.dart';
 import 'package:house_management_project/models/User.dart';
 import 'package:house_management_project/screens/Contract/AddServiceContractPage.dart';
+import 'package:house_management_project/screens/Room/RoomNavigationBar.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,42 +18,82 @@ class CreateContractPage extends StatefulWidget {
   final String houseId;
   final String roomName;
   final int roomId;
-  const CreateContractPage({Key key, @required this.houseId, @required this.roomName, @required this.roomId}) : super(key: key);
+  const CreateContractPage(
+      {Key key,
+      @required this.houseId,
+      @required this.roomName,
+      @required this.roomId})
+      : super(key: key);
 
   @override
   _CreateContractPageState createState() => _CreateContractPageState();
 }
 
 class _CreateContractPageState extends State<CreateContractPage> {
-  
   List<bool> _isOpen = [];
   String userId = '';
   List<TextEditingController> _controllers = [];
-  String houseName, ownerName, roomName;
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
   TextEditingController startDatePicked = new TextEditingController();
   TextEditingController endDatePicked = new TextEditingController();
   TextEditingController custName = new TextEditingController();
-  TextEditingController name = new TextEditingController();
+  TextEditingController roomPrice = new TextEditingController();
+  TextEditingController note = new TextEditingController();
   List<Service> listService = [];
   Map<String, dynamic> serviceContractData = new Map();
   List<Map<String, dynamic>> listMap = [];
+  String responseMsg = '';
 
+  sendServiceRoomData(String userId, int roomID, String startDate,
+      String endDate, String price, String note, List listServiceContract) async {
+    dynamic token = await FlutterSession().get("token");
+    var jsonData = null;
+    var url = Uri.parse('https://$serverHost/api/contracts');
+    try {
+      var response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}'
+        },
+        body: jsonEncode({
+          "tenantUserId": userId,
+          "roomId": roomID,
+          "startDate": DateTime.parse(startDate).toIso8601String(),
+          "endDate": DateTime.parse(endDate).toIso8601String(),
+          "roomPrice": int.parse(price),
+          "note": note,
+          "createServiceContracts": listServiceContract,
+        }),
+      );
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        jsonData = response.body;
+        setState(() {
+          responseMsg = 'Tạo hợp đồng thành công';
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              responseMsg,
+              style: TextStyle(fontSize: 20),
+            ),
+          ));
+        });
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (_) => RoomNavigationBar(houseId: widget.houseId)));
+      }
+    } catch (error) {
+      throw (error);
+    }
+  }
 
-  
   getData(String clockValue, int serviceId, int price) async {
     serviceContractData = {
       "serviceId": serviceId,
       "unitPrice": price,
       "startClockValue": int.parse(clockValue),
     };
-    // listMap.map((e) {
-    //    if(e.keys.contains('serviceId') && e.values.contains(serviceId)) {
-    //      listMap.r
-    //    }
-    //   print(e.values);
-    // });
+    listMap.add(serviceContractData);
   }
 
   _selectedDateTime(
@@ -68,7 +111,6 @@ class _CreateContractPageState extends State<CreateContractPage> {
       });
     }
   }
-
 
   Future<List<User>> getListUser(String query) async {
     var url = Uri.parse('https://$serverHost/api/accounts');
@@ -89,7 +131,7 @@ class _CreateContractPageState extends State<CreateContractPage> {
     }
   }
 
-Future getMoreService(BuildContext context) async {
+  Future getMoreService(BuildContext context) async {
     var result = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -109,7 +151,6 @@ Future getMoreService(BuildContext context) async {
       }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -164,15 +205,20 @@ Future getMoreService(BuildContext context) async {
                       Row(
                         children: [
                           Icon(
-                            MyFlutterApp.home,
+                            Icons.home_outlined,
                             color: Colors.black54,
                             size: 30,
                           ),
-                          SizedBox(width: 10,),
-                          Text('${widget.roomName}', style: TextStyle(
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            '${widget.roomName}',
+                            style: TextStyle(
                                 fontSize: 20,
                                 color: PrimaryColor,
-                                fontWeight: FontWeight.w600),),
+                                fontWeight: FontWeight.w600),
+                          ),
                           SizedBox(
                             width: 10,
                           ),
@@ -195,49 +241,69 @@ Future getMoreService(BuildContext context) async {
                             },
                           ),
                           Container(
-                            width: size.width * 0.68,
-                            child: Container(
-                              margin: EdgeInsets.only(bottom: 10, left: 10),
-                              width: size.width * 0.68,
-                              child: TextField(
-                                controller: startDatePicked,
-                                style:
-                                    TextStyle(color: Colors.blue, fontSize: 20),
-                                decoration: InputDecoration(
-                                  hintText: 'Ngày thuê',
-                                  hintStyle: TextStyle(fontSize: 20),
-                                ),
+                            width: size.width * 0.3,
+                            margin: EdgeInsets.only(bottom: 10, left: 10),
+                            child: TextField(
+                              controller: startDatePicked,
+                              style:
+                                  TextStyle(color: Colors.blue, fontSize: 20),
+                              decoration: InputDecoration(
+                                hintText: 'Ngày thuê',
+                                hintStyle: TextStyle(fontSize: 20),
                               ),
                             ),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Row(
+                            children: [
+                              GestureDetector(
+                                child: Icon(
+                                  MyFlutterApp.calendar,
+                                  color: Colors.black54,
+                                  size: 30,
+                                ),
+                                onTap: () {
+                                  _selectedDateTime(
+                                      context, _endDate, endDatePicked);
+                                },
+                              ),
+                              Container(
+                                width: size.width * 0.3,
+                                margin: EdgeInsets.only(bottom: 10, left: 10),
+                                child: TextField(
+                                  controller: endDatePicked,
+                                  style: TextStyle(
+                                      color: Colors.blue, fontSize: 20),
+                                  decoration: InputDecoration(
+                                    hintText: 'Ngày hết hạn',
+                                    hintStyle: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                       Row(
                         children: [
-                          GestureDetector(
-                            child: Icon(
-                              MyFlutterApp.calendar,
+                          Icon(
+                              Icons.attach_money_rounded,
                               color: Colors.black54,
                               size: 30,
                             ),
-                            onTap: () {
-                              _selectedDateTime(
-                                  context, _endDate, endDatePicked);
-                            },
-                          ),
                           Container(
-                            width: size.width * 0.68,
-                            child: Container(
-                              margin: EdgeInsets.only(bottom: 10, left: 10),
-                              width: size.width * 0.68,
-                              child: TextField(
-                                controller: endDatePicked,
-                                style:
-                                    TextStyle(color: Colors.blue, fontSize: 20),
-                                decoration: InputDecoration(
-                                  hintText: 'Ngày hết hạn',
-                                  hintStyle: TextStyle(fontSize: 20),
-                                ),
+                            width: size.width * 0.3,
+                            margin: EdgeInsets.only(bottom: 10, left: 10),
+                            child: TextField(
+                              controller: roomPrice,
+                              style:
+                                  TextStyle(color: Colors.blue, fontSize: 20),
+                              decoration: InputDecoration(
+                                hintText: 'Tiền phòng',
+                                hintStyle: TextStyle(fontSize: 20),
+                                suffixText: 'đ'
                               ),
                             ),
                           ),
@@ -246,12 +312,12 @@ Future getMoreService(BuildContext context) async {
                       Row(
                         children: [
                           Icon(
-                            MyFlutterApp.user,
+                            Icons.person_outline,
                             color: Colors.black54,
                             size: 30,
                           ),
                           Container(
-                            width: size.width * 0.68,
+                            width: size.width * 0.6,
                             child: Container(
                               margin: EdgeInsets.only(left: 10),
                               child: TypeAheadField<User>(
@@ -281,6 +347,28 @@ Future getMoreService(BuildContext context) async {
                                     custName.text = user.name;
                                   });
                                 },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(
+                              Icons.note_outlined,
+                              color: Colors.black54,
+                              size: 30,
+                            ),
+                          Container(
+                            width: size.width * 0.58,
+                            margin: EdgeInsets.only(bottom: 10, left: 10),
+                            child: TextField(
+                              controller: note,
+                              style:
+                                  TextStyle(color: Colors.blue, fontSize: 20),
+                              decoration: InputDecoration(
+                                hintText: 'Ghi chú',
+                                hintStyle: TextStyle(fontSize: 20),
                               ),
                             ),
                           ),
@@ -333,7 +421,7 @@ Future getMoreService(BuildContext context) async {
                         height: 20,
                       ),
                       Container(
-                        height: size.height * 0.4,
+                        height: size.height * 0.35,
                         width: size.width,
                         padding: EdgeInsets.symmetric(horizontal: 30),
                         child: ListView.builder(
@@ -550,7 +638,7 @@ Future getMoreService(BuildContext context) async {
                                                                             .spaceBetween,
                                                                     children: [
                                                                       Text(
-                                                                        'Nhập chỉ số: ',
+                                                                        'Nhập chỉ số đầu: ',
                                                                         style: TextStyle(
                                                                             fontSize:
                                                                                 18,
@@ -559,27 +647,29 @@ Future getMoreService(BuildContext context) async {
                                                                             fontWeight: FontWeight.w600),
                                                                       ),
                                                                       Container(
-                                                                        width: size.width *
-                                                                            0.12,
-                                                                        height: size.height *
-                                                                            0.03,
-                                                                        child: 
-                                                                          TextField(
-                                                                                controller: _controllers[index],
-                                                                                keyboardType: TextInputType.number,
-                                                                                textAlign: TextAlign.right,
-                                                                                decoration: InputDecoration(
-                                                                                  hintText: '0',
-                                                                                  hintStyle: TextStyle(fontSize: 17, color: Colors.black87),
-                                                                                ),
-                                                                                onSubmitted: (value) {
-                                                                                  _controllers[index].text = value;
-                                                                                  getData(
-                                                                                      _controllers[index].text, listService[index].id,
-                                                                                      listService[index].price);
-                                                                                },
-                                                                              )
-                                                                      )
+                                                                          width: size.width *
+                                                                              0.12,
+                                                                          height: size.height *
+                                                                              0.03,
+                                                                          child:
+                                                                              TextField(
+                                                                            controller:
+                                                                                _controllers[index],
+                                                                            keyboardType:
+                                                                                TextInputType.number,
+                                                                            textAlign:
+                                                                                TextAlign.right,
+                                                                            decoration:
+                                                                                InputDecoration(
+                                                                              hintText: '0',
+                                                                              hintStyle: TextStyle(fontSize: 17, color: Colors.black87),
+                                                                            ),
+                                                                            onSubmitted:
+                                                                                (value) {
+                                                                              _controllers[index].text = value;
+                                                                              getData(_controllers[index].text, listService[index].id, listService[index].price);
+                                                                            },
+                                                                          ))
                                                                     ],
                                                                   ))
                                                         : Container(),
@@ -636,7 +726,9 @@ Future getMoreService(BuildContext context) async {
                     ],
                   ),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 Container(
                   width: size.width * 0.2,
                   height: size.height * 0.045,
@@ -654,24 +746,31 @@ Future getMoreService(BuildContext context) async {
                             fontWeight: FontWeight.w700),
                       ),
                       onPressed: () {
-                        // try {
+                        try {
                         var list = startDatePicked.text.split("/");
                         String test = list[2] + "-" + list[1] + "-" + list[0];
                         DateTime time = DateTime.parse(test);
                         String startDateTest =
                             new DateFormat('yyyy-MM-dd').format(time);
-                        print(startDateTest);
+                        
                         list = endDatePicked.text.split("/");
                         test = list[2] + "-" + list[1] + "-" + list[0];
                         time = DateTime.parse(test);
                         String endDateTest =
                             new DateFormat('yyyy-MM-dd').format(time);
-                        print(endDateTest);
-                        print(userId);
-                        print(listMap);
-                        // } catch (e) {
-                        //   print(e.toString());
-                        // }
+                        
+                        // print(userId);
+                        // print(widget.roomId);
+                        // print(startDateTest);
+                        // print(endDateTest);
+                        // print(roomPrice.text);
+                        // print(note.text);
+                        // print(listMap);
+                        sendServiceRoomData(userId, widget.roomId, startDateTest, endDateTest, 
+                        roomPrice.text, note.text, listMap);
+                        } catch (e) {
+                          print(e.toString());
+                        }
                       },
                     ),
                   ),

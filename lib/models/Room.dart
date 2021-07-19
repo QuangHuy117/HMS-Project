@@ -31,7 +31,7 @@ class Room {
         id: json["id"],
         name: json["name"],
         houseId: json['houseId'],
-        roomSquare: json['roomSquare'] == null ? null : json['roomSquate'],
+        roomSquare: json['roomSquare'] == null ? null : json['roomSquare'],
         defaultPrice: json['defaultPrice'] == null ? null : json['defaultPrice'],
         status: json["status"],
         isDeleted: json["isDeleted"],

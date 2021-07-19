@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:house_management_project/main.dart';
 import 'package:house_management_project/models/Contract.dart';
 import 'package:house_management_project/models/Room.dart';
@@ -23,13 +25,14 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
   TextEditingController startDatePicked;
   TextEditingController endDatePicked;
   TextEditingController name = new TextEditingController();
-  TextEditingController custName;
-  TextEditingController elecNum;
-  TextEditingController waterNum;
+  TextEditingController custName = new TextEditingController();
+  TextEditingController roomSquare = new TextEditingController();
+  TextEditingController roomPrice = new TextEditingController();
   Room detail = new Room();
   Contract contract = new Contract();
   bool _isEdit = false;
   bool _isLoading = true;
+  String responseMsg = '';
 
   getRoomDetailFromRoomId() async {
     var url = Uri.parse('https://$serverHost/api/rooms/${widget.roomId}');
@@ -41,7 +44,44 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
         setState(() {
           detail = Room.fromJson(jsonData);
           name = new TextEditingController(text: detail.name);
+          roomPrice = new TextEditingController(text: detail.defaultPrice.toString());
+          roomSquare = new TextEditingController(text: detail.roomSquare.toString());
           _isLoading = false;
+        });
+      }
+    } catch (error) {
+      throw (error);
+    }
+  }
+
+  updateDetailRoom(String roomSquare, String price, String name) async {
+    dynamic token = await FlutterSession().get("token");
+    var url = Uri.parse('https://$serverHost/api/rooms');
+    try {
+      var response = await http.put(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}'
+        },
+        body: jsonEncode({
+          "id": detail.id,
+          "roomSquare": int.parse(roomSquare),
+          "defaultPrice": int.parse(price),
+          "name": name,
+        }),
+      );
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        setState(() {
+          responseMsg = 'Cập nhật phòng thành công';
+          _isEdit = false;
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+              responseMsg,
+              style: TextStyle(fontSize: 20),
+            ),
+          ));
         });
       }
     } catch (error) {
@@ -93,57 +133,204 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  width: size.width,
-                  child: _isEdit
-                      ? Container(
-                          margin: EdgeInsets.only(bottom: 10),
-                          width: size.width * 0.68,
-                          child: TextField(
-                            textAlign: TextAlign.center,
-                            controller: name,
-                            style: TextStyle(color: Colors.blue, fontSize: 20),
-                            decoration: InputDecoration(
-                              hintText: 'Tên phòng',
-                              hintStyle: TextStyle(fontSize: 20),
-                            ),
-                            onSubmitted: (value) {
-                              setState(() {
-                                _isEdit = false;
-                              });
-                              print(value);
-                            },
-                          ),
-                        )
-                      : Container(
-                          width: size.width * 0.68,
-                          height: size.height * 0.061,
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: GestureDetector(
-                            child: Text(
-                              detail.name == null ? '' : detail.name,
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: PrimaryColor,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            onTap: () {
-                              setState(() {
-                                _isEdit = true;
-                              });
-                            },
-                          ),
-                        ),
-                ),
-                SizedBox(
-                  height: 10,
+                Text(
+                  'Phòng',
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.blue),
                 ),
                 Divider(
                   indent: 60,
                   endIndent: 60,
                   thickness: 2,
                   color: Colors.blue,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.meeting_room_outlined,
+                        color: Colors.black54,
+                        size: 30,
+                      ),
+                      Container(
+                        width: size.width * 0.68,
+                        child: _isEdit
+                            ? Container(
+                                margin: EdgeInsets.only(bottom: 10, left: 10),
+                                width: size.width * 0.68,
+                                child: TextField(
+                                  controller: name,
+                                  style: TextStyle(
+                                      color: Colors.blue, fontSize: 22),
+                                  decoration: InputDecoration(
+                                    hintText: 'Tên phòng',
+                                    hintStyle: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: size.width * 0.68,
+                                height: size.height * 0.061,
+                                alignment: Alignment.centerLeft,
+                                margin: EdgeInsets.only(left: 10),
+                                child: GestureDetector(
+                                  child: Text(
+                                    detail.name == null ? 'N/A' : detail.name,
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        color: PrimaryColor,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      _isEdit = true;
+                                    });
+                                  },
+                                ),
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.crop_square,
+                        color: Colors.black54,
+                        size: 30,
+                      ),
+                      Container(
+                        width: size.width * 0.68,
+                        child: _isEdit
+                            ? Container(
+                                margin: EdgeInsets.only(bottom: 10, left: 10),
+                                width: size.width * 0.68,
+                                child: TextField(
+                                  controller: roomSquare,
+                                  style: TextStyle(
+                                      color: Colors.blue, fontSize: 22),
+                                  decoration: InputDecoration(
+                                    hintText: 'Diện tích',
+                                    hintStyle: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: size.width * 0.68,
+                                height: size.height * 0.061,
+                                alignment: Alignment.centerLeft,
+                                margin: EdgeInsets.only(left: 10),
+                                child: GestureDetector(
+                                  child: Text(
+                                    detail.roomSquare == null
+                                        ? 'N/A'
+                                        : detail.roomSquare.toString(),
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        color: PrimaryColor,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      _isEdit = true;
+                                    });
+                                  },
+                                ),
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.attach_money_outlined,
+                        color: Colors.black54,
+                        size: 30,
+                      ),
+                      Container(
+                        width: size.width * 0.68,
+                        child: _isEdit
+                            ? Container(
+                                margin: EdgeInsets.only(bottom: 10, left: 10),
+                                width: size.width * 0.68,
+                                child: TextField(
+                                  controller: roomPrice,
+                                  style: TextStyle(
+                                      color: Colors.blue, fontSize: 22),
+                                  decoration: InputDecoration(
+                                    hintText: 'Giá mặc định',
+                                    hintStyle: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: size.width * 0.68,
+                                height: size.height * 0.061,
+                                alignment: Alignment.centerLeft,
+                                margin: EdgeInsets.only(left: 10),
+                                child: GestureDetector(
+                                  child: Text(
+                                    detail.defaultPrice == null
+                                        ? 'N/A'
+                                        : detail.defaultPrice.toString(),
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        color: PrimaryColor,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      _isEdit = true;
+                                    });
+                                  },
+                                ),
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  width: size.width * 0.2,
+                  height: size.height * 0.045,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: PrimaryColor,
+                      ),
+                      child: Text(
+                        'Cập nhật',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700),
+                      ),
+                      onPressed: () {
+                        updateDetailRoom(
+                            roomSquare.text, roomPrice.text, name.text);
+                      },
+                    ),
+                  ),
                 ),
                 SizedBox(
                   height: 20,
@@ -155,7 +342,15 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
                       fontWeight: FontWeight.w700,
                       color: Colors.blue),
                 ),
-                SizedBox(height: 20,),
+                Divider(
+                  indent: 60,
+                  endIndent: 60,
+                  thickness: 2,
+                  color: Colors.blue,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 Container(
                   child: _isLoading
                       ? Center(
@@ -196,8 +391,16 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
                                                 fontWeight: FontWeight.w700),
                                           ),
                                           onPressed: () {
-                                            Navigator.push(context, 
-                                            MaterialPageRoute(builder: (_) => CreateContractPage(houseId: widget.houseId, roomName: detail.name, roomId: widget.roomId,)));
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        CreateContractPage(
+                                                          houseId:
+                                                              widget.houseId,
+                                                          roomName: detail.name,
+                                                          roomId: widget.roomId,
+                                                        )));
                                           },
                                         ),
                                       ),

@@ -64,6 +64,30 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
     }
   }
 
+
+  denyBill() async {
+    dynamic token = await FlutterSession().get("token");
+    var jsonData = null;
+    var url = Uri.parse('https://$serverHost/api/bills?id=${bill.id}');
+    try {
+      var response = await http.delete(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}'
+        },
+      );
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        // jsonData = response.body;
+        // responseMsg = 'Hủy bỏ hóa đơn';
+        Navigator.pop(context);
+      }
+    } catch (error) {
+      throw (error);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -85,7 +109,7 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
           automaticallyImplyLeading: false,
           leading: GestureDetector(
               onTap: () {
-                Navigator.pop(context);
+                denyBill();
               },
               child: Icon(
                 MyFlutterApp.left,
@@ -133,24 +157,24 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
                               color: Color(0xFF707070).withOpacity(1)),
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(bottom: 20),
-                        width: size.width * 0.75,
-                        child: TextField(
-                          controller: note,
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(
-                              MyFlutterApp.clipboard,
-                              size: 26,
-                            ),
-                            hintText: 'Ghi chú',
-                            hintStyle: TextStyle(
-                                fontSize: 20,
-                                color: Color(0xFF707070).withOpacity(0.5),
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                      ),
+                      // Container(
+                      //   margin: EdgeInsets.only(bottom: 20),
+                      //   width: size.width * 0.75,
+                      //   child: TextField(
+                      //     controller: note,
+                      //     decoration: InputDecoration(
+                      //       prefixIcon: Icon(
+                      //         MyFlutterApp.clipboard,
+                      //         size: 26,
+                      //       ),
+                      //       hintText: 'Ghi chú',
+                      //       hintStyle: TextStyle(
+                      //           fontSize: 20,
+                      //           color: Color(0xFF707070).withOpacity(0.5),
+                      //           fontWeight: FontWeight.w500),
+                      //     ),
+                      //   ),
+                      // ),
                       SizedBox(
                         height: 20,
                       ),
@@ -216,7 +240,7 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
                                               bool isExpanded) {
                                             return ListTile(
                                               title: Text(
-                                                '${bill.billItems[index].serviceContract.service.name} - ${format.format(bill.billItems[index].serviceContract.service.price)}đ / ${bill.billItems[index].serviceContract.service.calculationUnit}',
+                                                '${bill.billItems[index].serviceContract.service.name} - ${format.format(bill.billItems[index].totalPrice)}đ',
                                                 style: TextStyle(
                                                     color: Color(0xFF575757)
                                                         .withOpacity(1),
@@ -239,14 +263,14 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
                                               ),
                                               Container(
                                                 padding: EdgeInsets.symmetric(
-                                                    horizontal: 10),
+                                                    horizontal: 20),
                                                 child: Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment
                                                           .spaceBetween,
                                                   children: [
                                                     Text(
-                                                      'Tổng ${bill.billItems[index].serviceContract.service.name} ',
+                                                      'Đơn Giá: ',
                                                       style: TextStyle(
                                                           fontSize: 17,
                                                           color: Colors.blue,
@@ -258,11 +282,11 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
                                                           Alignment.centerRight,
                                                       padding: EdgeInsets.only(
                                                           top: 5),
-                                                      width: size.width * 0.2,
+                                                      width: size.width * 0.35,
                                                       height:
                                                           size.height * 0.03,
                                                       child: Text(
-                                                          '${format.format(bill.billItems[index].totalPrice)}đ',
+                                                          '${format.format(bill.billItems[index].serviceContract.service.price)}đ / ${bill.billItems[index].serviceContract.service.calculationUnit}',
                                                           style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -469,7 +493,9 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700),
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    denyBill();
+                                  },
                                 ),
                               ),
                             )
