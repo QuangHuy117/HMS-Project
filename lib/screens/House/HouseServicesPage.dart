@@ -59,7 +59,7 @@ class _HouseServicesPageState extends State<HouseServicesPage> {
           "name": name,
           "calculationUnit": calUnit,
           "price": int.parse(price),
-          "serviceTypeName": type
+          "serviceTypeName": "Thêm " + type
         }),
       );
       print(response.statusCode);

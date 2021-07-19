@@ -32,6 +32,7 @@ class _ListHouseViewState extends State<ListHouseView> {
   String urlImage = "";
 
   Future createHouse(String name, String address, String urlImg, BuildContext context) async {
+    print(urlImg);
     dynamic token = await FlutterSession().get("token");
     try {
       var jsonData = null;

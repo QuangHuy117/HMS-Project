@@ -25,7 +25,10 @@ class _AddServiceContractPageState extends State<AddServiceContractPage> {
   List<bool> _isCheck = [];
 
   Future<List<Service>> getListServiceHouse() async {
+    print('test1');
     list.clear();
+    listService.clear();
+    print(list.length);
     var url = Uri.parse('https://$serverHost/api/houses/${widget.houseId}');
     try {
       var response = await http.get(url);
@@ -50,6 +53,8 @@ class _AddServiceContractPageState extends State<AddServiceContractPage> {
             print("New ServiceId: " + u.id.toString());
           }
         }
+        print("after");
+        print(list.length);
         return list;
       }
     } catch (error) {
@@ -93,6 +98,7 @@ class _AddServiceContractPageState extends State<AddServiceContractPage> {
               future: getListServiceHouse(), // async work
               builder: (BuildContext context,
                   AsyncSnapshot<List<Service>> snapshot) {
+                    print('test2');
                 if (snapshot.connectionState == ConnectionState.done) {
                   return snapshot.data.length == 0
                       ? Container(
@@ -107,20 +113,16 @@ class _AddServiceContractPageState extends State<AddServiceContractPage> {
                           height: size.height * 0.5,
                           child: ListView.builder(
                             itemBuilder: (context, index) {
-                              _isCheck.add(false);
                               return CheckboxListTile(
-                                  value: _isCheck[index],
+                                  value: !snapshot.data[index].status,
                                   title: Text('${snapshot.data[index].name}'),
-                                  // Text('${list[index].name}'),
                                   subtitle: Text(
                                       '${snapshot.data[index].price} / ${snapshot.data[index].calculationUnit}'),
-                                  // Text(
-                                  //     '${list[index].price} / ${list[index].calculationUnit}'),
                                   activeColor: Colors.green,
                                   checkColor: Colors.black,
                                   onChanged: (bool value) {
                                     setState(() {
-                                      _isCheck[index] = value;
+                                      snapshot.data[index].status = value;
                                       if (value == true) {
                                         widget.listServiceContract
                                             .add(snapshot.data[index]);
@@ -140,15 +142,6 @@ class _AddServiceContractPageState extends State<AddServiceContractPage> {
                           height: 30,
                           child: CircularProgressIndicator()));
                 }
-                // switch (snapshot.connectionState) {
-                //   case ConnectionState.waiting:
-                //     return Text('Loading....');
-                //   default:
-                //     if (snapshot.hasError)
-                //       return Text('Error: ${snapshot.error}');
-                //     else
-                //       return
-                // }
               },
             )),
       ),
