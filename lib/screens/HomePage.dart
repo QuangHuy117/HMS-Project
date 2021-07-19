@@ -39,9 +39,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final tabs = [
       ListHouseView(),
-      ListBillPage(),
+      // ListBillPage(),
       ListContractPage(),
-      NotificationPage(),
+      // NotificationPage(),
       LandLordProfile(),
     ];
 
@@ -66,12 +66,12 @@ class _HomePageState extends State<HomePage> {
               items: [
                 TitledNavigationBarItem(
                     title: Container(padding: EdgeInsets.only(left: 15) , child: Text('Danh sách nhà', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w600))), icon: MyFlutterApp.home, backgroundColor: PrimaryColor),
-                TitledNavigationBarItem(
-                    title: Text('Hóa đơn', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.clipboard, backgroundColor: PrimaryColor),
+                // TitledNavigationBarItem(
+                //     title: Text('Hóa đơn', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.clipboard, backgroundColor: PrimaryColor),
                 TitledNavigationBarItem(
                     title: Text('Hợp đồng', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.file_contract, backgroundColor: PrimaryColor),
-                TitledNavigationBarItem(
-                    title: Text('Thông báo', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.bell, backgroundColor: PrimaryColor),
+                // TitledNavigationBarItem(
+                //     title: Text('Thông báo', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.bell, backgroundColor: PrimaryColor),
                 TitledNavigationBarItem(
                     title: Text('Hồ sơ', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.user, backgroundColor: PrimaryColor),
               ]),

@@ -29,7 +29,7 @@ class _RoomNavigationBarState extends State<RoomNavigationBar> {
       RoomPage(
         houseId: widget.houseId,
       ),
-      ListBillPage(),
+      // ListBillPage(),
       ListContractPage(),
       NotificationPage(),
       LandLordProfile(),
@@ -58,8 +58,8 @@ class _RoomNavigationBarState extends State<RoomNavigationBar> {
               items: [
                 TitledNavigationBarItem(
                     title: Container(padding: EdgeInsets.only(left: 15) , child: Text('Danh sách phòng', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w600))), icon: Icons.meeting_room, backgroundColor: PrimaryColor),
-                TitledNavigationBarItem(
-                    title: Text('Hóa đơn', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.clipboard, backgroundColor: PrimaryColor),
+                // TitledNavigationBarItem(
+                //     title: Text('Hóa đơn', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.clipboard, backgroundColor: PrimaryColor),
                 TitledNavigationBarItem(
                     title: Text('Hợp đồng', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.file_contract, backgroundColor: PrimaryColor),
                 TitledNavigationBarItem(

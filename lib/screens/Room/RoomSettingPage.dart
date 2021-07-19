@@ -64,7 +64,7 @@ class _RoomSettingPageState extends State<RoomSettingPage> {
                     child: Container(
                       child: Align(
                         alignment: Alignment.center,
-                        child: Text('Dịch vụ'),
+                        child: Text('Tạo hóa đơn'),
                       ),
                     ),
                   ),

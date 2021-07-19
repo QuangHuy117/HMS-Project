@@ -166,8 +166,8 @@ class _SignInPageState extends State<SignInPage> {
                           backgroundColor: PrimaryColor,
                         ),
                         child: _isLoading ? Container(
-                          height: 30,
-                          width: 30,
+                          height: 25,
+                          width: 25,
                           child: CircularProgressIndicator(
                             color: Colors.white,
                           ),
@@ -344,8 +344,7 @@ class _SignInPageState extends State<SignInPage> {
         } else {
           Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (_) => TenantHomePage()),
-              (route) => false);
+              MaterialPageRoute(builder: (_) => TenantHomePage()), (route) => false);
         }
       }
     } on FirebaseAuthException catch (e) {
