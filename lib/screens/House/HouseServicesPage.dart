@@ -184,7 +184,6 @@ class _HouseServicesPageState extends State<HouseServicesPage> {
                       Container(
                         padding: EdgeInsets.only(left: 70, right: 20),
                         child: Column(
-                          // mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(

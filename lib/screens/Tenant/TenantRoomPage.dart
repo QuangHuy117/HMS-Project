@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/main.dart';
 import 'package:house_management_project/models/Room.dart';
 import 'package:intl/intl.dart';
@@ -16,11 +17,10 @@ class TenantRoomPage extends StatefulWidget {
 }
 
 class _TenantRoomPageState extends State<TenantRoomPage> {
-  List<Room> listRoom = [];
   Room room = new Room();
 
   getRoomData() async {
-    listRoom.clear();
+    print(widget.roomId);
     var url = Uri.parse('https://$serverHost/api/rooms/${widget.roomId}');
     try {
       var response = await http.get(url);
@@ -29,6 +29,7 @@ class _TenantRoomPageState extends State<TenantRoomPage> {
         var items = jsonDecode(response.body);
         setState(() {
           room = Room.fromJson(items);
+          print(room);
         });
       }
     } catch (error) {
@@ -37,17 +38,42 @@ class _TenantRoomPageState extends State<TenantRoomPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    getRoomData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return SingleChildScrollView(
-      child: Container(
-        height: size.height * 0.8,
-        width: size.width,
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: RefreshIndicator(
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              return Container(
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          title: Text(
+            'Phòng của tôi',
+            style: TextStyle(
+                color: Colors.white, fontSize: 22, fontWeight: FontWeight.w700),
+          ),
+          centerTitle: true,
+          backgroundColor: PrimaryColor,
+          leading: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Icon(
+                MyFlutterApp.left,
+                color: Colors.white,
+                size: 30,
+              )),
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            height: size.height * 0.8,
+            width: size.width,
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: RefreshIndicator(
+              child: Container(
                 height: size.height * 0.18,
                 padding: EdgeInsets.symmetric(
                   horizontal: 20,
@@ -58,13 +84,13 @@ class _TenantRoomPageState extends State<TenantRoomPage> {
                 child: GestureDetector(
                   onTap: () {
                     //  else {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (_) => BillHistoryPage(
-                      //               contractId:
-                      //                   listRoom[index].contract.id,
-                      //             )));
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (_) => BillHistoryPage(
+                    //               contractId:
+                    //                   listRoom[index].contract.id,
+                    //             )));
                     // }
                   },
                   child: Card(
@@ -107,7 +133,7 @@ class _TenantRoomPageState extends State<TenantRoomPage> {
                                           fontWeight: FontWeight.w700),
                                     ),
                                     Text(
-                                      '${listRoom[index].name}',
+                                      '${room.name}',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
@@ -127,7 +153,7 @@ class _TenantRoomPageState extends State<TenantRoomPage> {
                                           fontWeight: FontWeight.w700),
                                     ),
                                     Text(
-                                      '${listRoom[index].contract == null ? 'Trống' : listRoom[index].contract.tenant.name}',
+                                      '${room.contract == null ? 'Trống' : room.contract.tenant.name}',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
@@ -147,7 +173,7 @@ class _TenantRoomPageState extends State<TenantRoomPage> {
                                           fontWeight: FontWeight.w700),
                                     ),
                                     Text(
-                                      '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.startDate)}',
+                                      '${room.contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(room.contract.startDate)}',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
@@ -167,7 +193,7 @@ class _TenantRoomPageState extends State<TenantRoomPage> {
                                           fontWeight: FontWeight.w700),
                                     ),
                                     Text(
-                                      '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.endDate)}',
+                                      '${room.contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(room.contract.endDate)}',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
@@ -207,9 +233,9 @@ class _TenantRoomPageState extends State<TenantRoomPage> {
                           top: 10,
                           right: 10,
                           child: Text(
-                            '${listRoom[index].status ? 'Đang thuê' : ''}',
+                            '${room.status ? 'Đang thuê' : ''}',
                             style: TextStyle(
-                              color: listRoom[index].status
+                              color: room.status
                                   ? PrimaryColor
                                   : Color(0xFF707070),
                               fontSize: 20,
@@ -221,11 +247,10 @@ class _TenantRoomPageState extends State<TenantRoomPage> {
                     ),
                   ),
                 ),
-              );
-            },
-            itemCount: listRoom.length,
+              ),
+              onRefresh: () => getRoomData(),
+            ),
           ),
-          onRefresh: () => getRoomData(),
         ),
       ),
     );

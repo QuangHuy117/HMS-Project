@@ -46,7 +46,7 @@ class _TenantHomePageState extends State<TenantHomePage> {
             ),
           child: TitledBottomNavigationBar(
               curve: Curves.easeOutBack,
-              activeColor: Colors.black,
+              activeColor: Colors.white,
               inactiveColor: Colors.white,
               reverse: true,
               currentIndex: _currentIndex,
@@ -57,7 +57,7 @@ class _TenantHomePageState extends State<TenantHomePage> {
               },
               items: [
                 TitledNavigationBarItem(
-                    title: Container(padding: EdgeInsets.only(left: 15) , child: Text('Hợp đồng', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w600))), icon: MyFlutterApp.home, backgroundColor: PrimaryColor),
+                    title: Container(padding: EdgeInsets.only(left: 15) , child: Text('Hợp đồng', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18))), icon: MyFlutterApp.home, backgroundColor: PrimaryColor),
                 // TitledNavigationBarItem(
                 //     title: Text('Hóa đơn', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.clipboard, backgroundColor: PrimaryColor),
                 // TitledNavigationBarItem(
@@ -65,7 +65,7 @@ class _TenantHomePageState extends State<TenantHomePage> {
                 // TitledNavigationBarItem(
                 //     title: Text('Thông báo', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.bell, backgroundColor: PrimaryColor),
                 TitledNavigationBarItem(
-                    title: Text('Hồ sơ', style: TextStyle(fontWeight: FontWeight.w600)), icon: MyFlutterApp.user, backgroundColor: PrimaryColor),
+                    title: Text('Hồ sơ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)), icon: MyFlutterApp.user, backgroundColor: PrimaryColor),
               ]),
         ),
         body: tabs[_currentIndex],
