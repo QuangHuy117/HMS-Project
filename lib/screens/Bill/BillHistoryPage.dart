@@ -21,6 +21,7 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
   List listItem = ['Tất cả', 'Đã thanh toán', 'Chưa thanh toán'];
   var _currentItemSelected = 'Tất cả';
   bool _isLoading = true;
+  String responseMsg = '';
 
   getList(String value) async {
     if (value == 'Tất cả') {
@@ -35,6 +36,11 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
           listBill = billFromJson(response.body);
           _isLoading = false;
           print(listBill);
+        });
+      }  
+      if (response.statusCode == 404) {
+        setState(() {
+          responseMsg = 'Không có hóa đơn';
         });
       }
     } catch (error) {
@@ -53,6 +59,11 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
           _isLoading = false;
           print(listBill);
         });
+      } 
+      if (response.statusCode == 404) {
+        setState(() {
+          responseMsg = 'Không có hóa đơn';
+        });
       }
     } catch (error) {
       throw (error);
@@ -69,6 +80,11 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
           listBill = billFromJson(response.body);
           _isLoading = false;
           print(listBill);
+        });
+      } 
+      if (response.statusCode == 404) {
+        setState(() {
+          responseMsg = 'Không có hóa đơn';
         });
       }
     } catch (error) {
@@ -153,8 +169,8 @@ class _BillHistoryPageState extends State<BillHistoryPage> {
                   ],
                 ),
               ),
-              widget.contractId == null ? Center(
-                child: Text('Chưa có hóa đơn'),
+              responseMsg.isNotEmpty ? Center(
+                child: Text(responseMsg, style: TextStyle(fontSize: 20),),
               )
               : _isLoading ? Center(
                 child: Container(

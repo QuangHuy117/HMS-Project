@@ -80,221 +80,360 @@ class _ListRoomUsingState extends State<ListRoomUsing> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return
-        // _isLoading ? Container(
-        //             alignment: Alignment.center,
-        //             height: 50,
-        //             width: 50,
-        //             child: listRoom.isNotEmpty ? CircularProgressIndicator()
-        //             : Text('Chưa'),
-        //           )
-        //    :
-        SingleChildScrollView(
-      child: Container(
-        height: size.height * 0.8,
-        width: size.width,
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: RefreshIndicator(
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              return Container(
-                height: size.height * 0.18,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                ),
-                margin: EdgeInsets.only(
-                  top: 30,
-                ),
-                child: Slidable(
-                  actionPane: SlidableDrawerActionPane(),
-                  child: GestureDetector(
-                    onTap: () {
-                      if (listRoom[index].contract == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                            'Phòng này chưa có hóa đơn',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ));
-                      } else {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => BillHistoryPage(
-                                      contractId: listRoom[index].contract.id,
-                                    )));
-                      }
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(40),
-                            bottomLeft: Radius.circular(40),
-                            topRight: Radius.circular(5),
-                            bottomRight: Radius.circular(5)),
+    return _isLoading
+        ? Container(
+            alignment: Alignment.center,
+            height: 50,
+            width: 50,
+            child: CircularProgressIndicator())
+        : SingleChildScrollView(
+            child: Container(
+              height: size.height * 0.8,
+              width: size.width,
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: RefreshIndicator(
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return Container(
+                      height: size.height * 0.2,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20,
                       ),
-                      elevation: 5,
-                      shadowColor: Colors.black,
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            top: 50,
-                            left: 5,
-                            child: Icon(
-                              Icons.meeting_room,
-                              color: PrimaryColor,
-                              size: 60,
+                      margin: EdgeInsets.only(
+                        top: 30,
+                      ),
+                      child: Slidable(
+                        actionPane: SlidableDrawerActionPane(),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => BillHistoryPage(
+                                          contractId:
+                                              listRoom[index].contract.id,
+                                        )));
+                          },
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(10),
+                                  bottomLeft: Radius.circular(10),
+                                  topRight: Radius.circular(10),
+                                  bottomRight: Radius.circular(10)),
                             ),
+                            elevation: 5,
+                            shadowColor: Colors.black,
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding:
+                                      EdgeInsets.only(left: size.width * 0.01),
+                                  child: Icon(Icons.meeting_room,
+                                      color: PrimaryColor, size: 60),
+                                ),
+                                Container(
+                                  padding:
+                                      EdgeInsets.only(left: size.width * 0.02),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: size.width * 0.52,
+                                        padding: EdgeInsets.only(
+                                          right: 10,
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  'Tên phòng : ',
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                                Text(
+                                                  '${listRoom[index].name}',
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.blueGrey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  'Tên khách : ',
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                                Text(
+                                                  '${listRoom[index].contract == null ? 'Trống' : listRoom[index].contract.tenant.name}',
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.blueGrey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  'Ngày thuê : ',
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                                Text(
+                                                  '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.startDate)}',
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.blueGrey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  'Ngày hết hạn : ',
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                                Text(
+                                                  '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.endDate)}',
+                                                  style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.blueGrey,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.symmetric(vertical: 5),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '${listRoom[index].status ? 'Đang thuê' : ''}',
+                                        style: TextStyle(
+                                          color: listRoom[index].status
+                                              ? PrimaryColor
+                                              : Color(0xFF707070),
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        child: Icon(
+                                          Icons.edit,
+                                          color: PrimaryColor,
+                                        ),
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      RoomSettingPage(
+                                                        roomId:
+                                                            listRoom[index].id,
+                                                        houseId: widget.houseId,
+                                                      )));
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // Stack(
+                            //   children: [
+                            //     Positioned(
+                            //       top: 50,
+                            //       left: 5,
+                            //       child: Icon(
+                            //         Icons.meeting_room,
+                            //         color: PrimaryColor,
+                            //         size: 60,
+                            //       ),
+                            //     ),
+                            //     Positioned(
+                            //       top: 30,
+                            //       left: 65,
+                            //       child: Container(
+                            //         width: size.width * 0.6,
+                            //         padding: EdgeInsets.only(
+                            //           right: 10,
+                            //         ),
+                            //         child: Column(
+                            //           children: [
+                            //             Row(
+                            //               children: [
+                            //                 Text(
+                            //                   'Tên phòng : ',
+                            //                   style: TextStyle(
+                            //                       fontSize: 16,
+                            //                       fontWeight: FontWeight.w700),
+                            //                 ),
+                            //                 Text(
+                            //                   '${listRoom[index].name}',
+                            //                   style: TextStyle(
+                            //                     fontSize: 16,
+                            //                     fontWeight: FontWeight.w500,
+                            //                   ),
+                            //                 ),
+                            //               ],
+                            //             ),
+                            //             SizedBox(
+                            //               height: 8,
+                            //             ),
+                            //             Row(
+                            //               children: [
+                            //                 Text(
+                            //                   'Tên khách : ',
+                            //                   style: TextStyle(
+                            //                       fontSize: 16,
+                            //                       fontWeight: FontWeight.w700),
+                            //                 ),
+                            //                 Text(
+                            //                   '${listRoom[index].contract == null ? 'Trống' : listRoom[index].contract.tenant.name}',
+                            //                   style: TextStyle(
+                            //                     fontSize: 16,
+                            //                     fontWeight: FontWeight.w500,
+                            //                   ),
+                            //                 ),
+                            //               ],
+                            //             ),
+                            //             SizedBox(
+                            //               height: 8,
+                            //             ),
+                            //             Row(
+                            //               children: [
+                            //                 Text(
+                            //                   'Ngày thuê : ',
+                            //                   style: TextStyle(
+                            //                       fontSize: 16,
+                            //                       fontWeight: FontWeight.w700),
+                            //                 ),
+                            //                 Text(
+                            //                   '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.startDate)}',
+                            //                   style: TextStyle(
+                            //                     fontSize: 16,
+                            //                     fontWeight: FontWeight.w500,
+                            //                   ),
+                            //                 ),
+                            //               ],
+                            //             ),
+                            //             SizedBox(
+                            //               height: 8,
+                            //             ),
+                            //             Row(
+                            //               children: [
+                            //                 Text(
+                            //                   'Ngày hết hạn : ',
+                            //                   style: TextStyle(
+                            //                       fontSize: 16,
+                            //                       fontWeight: FontWeight.w700),
+                            //                 ),
+                            //                 Text(
+                            //                   '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.endDate)}',
+                            //                   style: TextStyle(
+                            //                     fontSize: 16,
+                            //                     fontWeight: FontWeight.w500,
+                            //                   ),
+                            //                 ),
+                            //               ],
+                            //             ),
+                            //             SizedBox(
+                            //               height: 8,
+                            //             ),
+                            //           ],
+                            //         ),
+                            //       ),
+                            //     ),
+                            //     Positioned(
+                            //       bottom: 10,
+                            //       right: 10,
+                            //       child: GestureDetector(
+                            //         child: Icon(
+                            //           Icons.edit,
+                            //           color: PrimaryColor,
+                            //         ),
+                            //         onTap: () {
+                            //           Navigator.push(
+                            //               context,
+                            //               MaterialPageRoute(
+                            //                   builder: (context) => RoomSettingPage(
+                            //                         roomId: listRoom[index].id,
+                            //                         houseId: widget.houseId,
+                            //                       )));
+                            //         },
+                            //       ),
+                            //     ),
+                            //     Positioned(
+                            //       top: 10,
+                            //       right: 10,
+                            //       child: Text(
+                            //         '${listRoom[index].status ? 'Đang thuê' : ''}',
+                            //         style: TextStyle(
+                            //           color: listRoom[index].status
+                            //               ? PrimaryColor
+                            //               : Color(0xFF707070),
+                            //           fontSize: 20,
+                            //           fontWeight: FontWeight.w700,
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
                           ),
-                          Positioned(
-                            top: 30,
-                            left: 65,
-                            child: Container(
-                              width: size.width * 0.6,
-                              padding: EdgeInsets.only(
-                                right: 10,
-                              ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Tên phòng : ',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                      Text(
-                                        '${listRoom[index].name}',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 8,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Tên khách : ',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                      Text(
-                                        '${listRoom[index].contract == null ? 'Trống' : listRoom[index].contract.tenant.name}',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 8,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Ngày thuê : ',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                      Text(
-                                        '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.startDate)}',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 8,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Ngày hết hạn : ',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                      Text(
-                                        '${listRoom[index].contract == null ? 'Trống' : DateFormat('dd/MM/yyyy').format(listRoom[index].contract.endDate)}',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 8,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 10,
-                            right: 10,
-                            child: GestureDetector(
-                              child: Icon(
-                                MyFlutterApp.cog,
-                                color: PrimaryColor,
-                              ),
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => RoomSettingPage(
-                                              roomId: listRoom[index].id,
-                                              houseId: widget.houseId,
-                                            )));
-                              },
-                            ),
-                          ),
-                          Positioned(
-                            top: 10,
-                            right: 10,
-                            child: Text(
-                              '${listRoom[index].status ? 'Đang thuê' : ''}',
-                              style: TextStyle(
-                                color: listRoom[index].status
-                                    ? PrimaryColor
-                                    : Color(0xFF707070),
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
+                        ),
+                        secondaryActions: [
+                          IconSlideAction(
+                            caption: 'Delete',
+                            color: Colors.red,
+                            icon: Icons.delete,
+                            onTap: () {
+                              deleteRoom(listRoom[index].id);
+                            },
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  secondaryActions: [
-                    IconSlideAction(
-                      caption: 'Delete',
-                      color: Colors.red,
-                      icon: Icons.delete,
-                      onTap: () {
-                        deleteRoom(listRoom[index].id);
-                      },
-                    ),
-                  ],
+                    );
+                  },
+                  itemCount: listRoom.length,
                 ),
-              );
-            },
-            itemCount: listRoom.length,
-          ),
-          onRefresh: () => getRoomsByHouseId(),
-        ),
-      ),
-    );
+                onRefresh: () => getRoomsByHouseId(),
+              ),
+            ),
+          );
   }
 }

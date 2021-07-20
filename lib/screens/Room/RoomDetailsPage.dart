@@ -325,7 +325,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
                             fontSize: 18,
                             fontWeight: FontWeight.w700),
                       ),
-                      onPressed: () {
+                      onPressed: _isEdit ? null : () {
                         updateDetailRoom(
                             roomSquare.text, roomPrice.text, name.text);
                       },

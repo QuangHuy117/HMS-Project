@@ -113,24 +113,11 @@ class _HouseDetailsPageState extends State<HouseDetailsPage> {
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Container(
-        color: Color(0xFFF5F5F5),
+        color: Colors.white,
         width: size.width,
         padding: EdgeInsets.all(15),
         child: Column(
           children: [
-            Container(
-              margin: EdgeInsets.only(
-                bottom: 10,
-              ),
-              child: Text(
-                'Chi tiết nhà',
-                style: TextStyle(
-                  color: Colors.blueGrey,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
             Container(
               padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
               height: size.height * 0.8,
@@ -226,10 +213,12 @@ class _HouseDetailsPageState extends State<HouseDetailsPage> {
                       child: Container(
                         height: size.height * 0.1,
                         width: size.width * 0.2,
-                        child: house.houseInfo == null ? Container() : Image.network(
-                          '${house.houseInfo.image}',
-                          fit: BoxFit.cover,
-                        ),
+                        child: house.houseInfo == null
+                            ? Container()
+                            : Image.network(
+                                '${house.houseInfo.image}',
+                                fit: BoxFit.cover,
+                              ),
                       ),
                       onTap: () {
                         setState(() {

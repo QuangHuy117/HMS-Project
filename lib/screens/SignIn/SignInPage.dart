@@ -8,7 +8,7 @@ import 'package:house_management_project/components/TextPasswordInput.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
 import 'package:house_management_project/main.dart';
 import 'package:house_management_project/screens/SignIn/ForgotPasswordPage.dart';
-import 'package:house_management_project/screens/HomePage.dart';
+import 'package:house_management_project/screens/House/HomePage.dart';
 import 'package:house_management_project/screens/SignUp/SignUpPage.dart';
 import 'package:house_management_project/screens/Tenant/TenantHomePage.dart';
 import 'package:http/http.dart' as http;
@@ -166,8 +166,8 @@ class _SignInPageState extends State<SignInPage> {
                           backgroundColor: PrimaryColor,
                         ),
                         child: _isLoading ? Container(
-                          height: 25,
-                          width: 25,
+                          height: 23,
+                          width: 23,
                           child: CircularProgressIndicator(
                             color: Colors.white,
                           ),

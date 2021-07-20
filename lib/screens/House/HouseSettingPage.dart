@@ -14,7 +14,6 @@ class HouseSettingPage extends StatefulWidget {
 class _HouseSettingPageState extends State<HouseSettingPage> {
   @override
   Widget build(BuildContext context) {
-    // Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: DefaultTabController(
         length: 2,
@@ -44,7 +43,7 @@ class _HouseSettingPageState extends State<HouseSettingPage> {
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10),
                   topRight: Radius.circular(10)),
-                color: Color(0xFFF5F5F5),
+                color: Colors.white,
               ),
               labelColor: Colors.blueGrey,
               labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),

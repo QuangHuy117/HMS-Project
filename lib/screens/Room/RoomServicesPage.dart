@@ -36,6 +36,7 @@ class _RoomServicesPageState extends State<RoomServicesPage> {
   List<Map<String, dynamic>> listMap = [];
   String valueChoose;
   List<bool> _isOpen = [];
+  List listValue = [];
 
   getRoomService() async {
     var url = Uri.parse('https://$serverHost/api/rooms/${widget.roomId}');
@@ -47,6 +48,11 @@ class _RoomServicesPageState extends State<RoomServicesPage> {
           for (var u in jsonData['contract']['serviceContracts']) {
             ServiceContracts service = ServiceContracts.fromJson(u);
             listService.add(service);
+            // for (var i in service.clock.clockValues){
+            //     if (i.status == true) {
+            //       listValue.add(i.indexValue);
+            //     }
+            // }
           }
         });
       }
@@ -245,7 +251,7 @@ class _RoomServicesPageState extends State<RoomServicesPage> {
                                         bool isExpanded) {
                                       return ListTile(
                                         title: Text(
-                                          '${listService[index].service.name} - ${listService[index].unitPrice} / ${listService[index].service.calculationUnit}',
+                                          '${listService[index].service.name} - ${listService[index].service.price} / ${listService[index].service.calculationUnit}',
                                           style: TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600),
@@ -502,7 +508,7 @@ class _RoomServicesPageState extends State<RoomServicesPage> {
                                                                   decoration:
                                                                       InputDecoration(
                                                                     hintText:
-                                                                        // '${listService[index].clock.clockValues[index].status == true ? listService[index].clock.clockValues[index].indexValue : ''}',
+                                                                    // listValue[index],
                                                                         '0',
                                                                     hintStyle: TextStyle(
                                                                         fontSize:

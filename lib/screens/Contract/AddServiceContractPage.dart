@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:house_management_project/fonts/my_flutter_app_icons.dart';
@@ -22,7 +23,6 @@ class AddServiceContractPage extends StatefulWidget {
 class _AddServiceContractPageState extends State<AddServiceContractPage> {
   List<Service> listService = [];
   List<Service> list = [];
-  List<bool> _isCheck = [];
 
   Future<List<Service>> getListServiceHouse() async {
     print('test1');
@@ -62,11 +62,6 @@ class _AddServiceContractPageState extends State<AddServiceContractPage> {
     }
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -98,7 +93,7 @@ class _AddServiceContractPageState extends State<AddServiceContractPage> {
               future: getListServiceHouse(), // async work
               builder: (BuildContext context,
                   AsyncSnapshot<List<Service>> snapshot) {
-                    print('test2');
+                print('test2');
                 if (snapshot.connectionState == ConnectionState.done) {
                   return snapshot.data.length == 0
                       ? Container(
@@ -109,28 +104,52 @@ class _AddServiceContractPageState extends State<AddServiceContractPage> {
                                 fontSize: 20, fontWeight: FontWeight.w600),
                           ))
                       : Container(
-                          width: size.width,
                           height: size.height * 0.5,
+                          padding: EdgeInsets.only(top: 20, bottom: 10, left: 30, right: 30),
                           child: ListView.builder(
                             itemBuilder: (context, index) {
-                              return CheckboxListTile(
-                                  value: !snapshot.data[index].status,
-                                  title: Text('${snapshot.data[index].name}'),
-                                  subtitle: Text(
-                                      '${snapshot.data[index].price} / ${snapshot.data[index].calculationUnit}'),
-                                  activeColor: Colors.green,
-                                  checkColor: Colors.black,
-                                  onChanged: (bool value) {
-                                    setState(() {
-                                      snapshot.data[index].status = value;
-                                      if (value == true) {
-                                        widget.listServiceContract
-                                            .add(snapshot.data[index]);
-                                        snapshot.data
-                                            .remove(snapshot.data[index]);
-                                      }
-                                    });
-                                  });
+                              return Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: Colors.black87),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.shade200,
+                                      offset: const Offset(0,5,),
+                                      blurRadius: 10.0,
+                                      spreadRadius: 2.0,
+                                    ),
+                                    BoxShadow(
+                                      color: Colors.white,
+                                      offset: const Offset(0.0, 0.0),
+                                      blurRadius: 0.0,
+                                      spreadRadius: 0.0,
+                                    ),
+                                  ],
+                                ),
+                                child: CheckboxListTile(
+                                    value: !snapshot.data[index].status,
+                                    title: Text('${snapshot.data[index].name}'),
+                                    secondary: CircleAvatar(
+                                      backgroundColor: Colors.primaries[Random().nextInt(Colors.primaries.length)],
+                                        child: Text(
+                                            '${snapshot.data[index].name.substring(0, 1).toUpperCase()}')),
+                                    subtitle: Text(
+                                        '${snapshot.data[index].price} / ${snapshot.data[index].calculationUnit}'),
+                                    activeColor: Colors.green,
+                                    checkColor: Colors.black,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        snapshot.data[index].status = value;
+                                        if (value == true) {
+                                          widget.listServiceContract
+                                              .add(snapshot.data[index]);
+                                          snapshot.data
+                                              .remove(snapshot.data[index]);
+                                        }
+                                      });
+                                    }),
+                              );
                             },
                             itemCount: snapshot.data.length,
                           ),

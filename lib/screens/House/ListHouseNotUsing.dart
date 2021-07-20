@@ -60,16 +60,16 @@ class _ListHouseNotUsingState extends State<ListHouseNotUsing> {
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Container(
-        height: size.height * 0.8,
+        height: size.height * 0.85,
         width: size.width,
         padding: EdgeInsets.symmetric(vertical: 10),
         child: RefreshIndicator(
           child: ListView.builder(
             itemBuilder: (context, index) {
               return Container(
-                height: size.height * 0.15,
+                height: size.height * 0.2,
                 padding: EdgeInsets.symmetric(
-                  horizontal: 25,
+                  horizontal: 15,
                 ),
                 margin: EdgeInsets.only(
                   top: 30,
@@ -92,89 +92,179 @@ class _ListHouseNotUsingState extends State<ListHouseNotUsing> {
                       ),
                       elevation: 6,
                       shadowColor: Colors.black,
-                      child: Stack(
+                      child: Row(
                         children: [
-                          Positioned(
-                            top: 30,
-                            left: 5,
-                            child: Icon(
-                              MyFlutterApp.home,
-                              color: PrimaryColor,
-                              size: 60,
+                          Container(
+                            width: size.height * 0.19,
+                            height: size.height * 0.19,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                '${listHouse[index].houseInfo.image}',
+                                fit: BoxFit.fill,
+                              ),
                             ),
                           ),
-                          Positioned(
-                            top: 28,
-                            left: 70,
-                            child: Container(
-                              width: size.width * 0.6,
-                              padding: EdgeInsets.only(
-                                right: 10,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.only(top: 10,),
+                                width: size.width * 0.53,
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  '${listHouse[index].status ? '' : 'Chưa thuê'}',
+                                  style: TextStyle(
+                                    color: listHouse[index].status
+                                        ? PrimaryColor
+                                        : Color(0xFF707070),
+                                    fontSize: 21,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Nhà ở ${listHouse[index].houseInfo.name}',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w700,
+                              SizedBox(height: size.height * 0.01,),
+                              Container(
+                                width: size.width * 0.5,
+                                padding: EdgeInsets.only(left: size.width * 0.03),
+                                child: Text(
+                                  'Nhà ở ${listHouse[index].houseInfo.name}',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.black87
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: size.height * 0.025,),
+                              Container(
+                                width: size.width * 0.52,
+                                padding: EdgeInsets.only(left: 10),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(Icons.room, color: PrimaryColor,),
+                                    Container(
+                                      width: size.width * 0.44,
+                                      padding: EdgeInsets.only(
+                                        right: size.width * 0.01,
+                                      ),
+                                      child: Text(
+                                        '${listHouse[index].houseInfo.address}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.blueGrey,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    '${listHouse[index].houseInfo.address}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                          Positioned(
-                            top: 15,
-                            right: 10,
-                            child: Text(
-                              '${listHouse[index].status ? '' : 'Chưa thuê'}',
-                              style: TextStyle(
-                                color: listHouse[index].status
-                                    ? PrimaryColor
-                                    : Color(0xFF707070),
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 10,
-                            right: 10,
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HouseSettingPage(
-                                          houseId: listHouse[index].id)),
-                                );
-                              },
-                              child: Icon(
-                                MyFlutterApp.cog,
-                                color: PrimaryColor,
-                                size: 28,
-                              ),
-                            ),
-                          ),
+                          // Container(
+                          //   width: size.height * 0.17,
+                          //   height: size.height * 0.18,
+                          //   decoration: BoxDecoration(
+                          //     borderRadius: BorderRadius.circular(20),
+                          //     color: Colors.grey
+                          //   ),
+                          //   child: (
+                          //     Image.network('${listHouse[index].houseInfo.image}',
+                          //     fit: BoxFit.contain,)
+                          //   ),
+                          // ),
                         ],
                       ),
+                      // Stack(
+                      //   children: [
+                      //     Positioned(
+                      //       top: 30,
+                      //       left: 5,
+                      //       child: Icon(
+                      //         MyFlutterApp.home,
+                      //         color: PrimaryColor,
+                      //         size: 60,
+                      //       ),
+                      //     ),
+                      //     Positioned(
+                      //       top: 28,
+                      //       left: 70,
+                      //       child: Container(
+                      //         width: size.width * 0.6,
+                      //         padding: EdgeInsets.only(
+                      //           right: 10,
+                      //         ),
+                      //         child: Column(
+                      //           crossAxisAlignment: CrossAxisAlignment.start,
+                      //           children: [
+                      //             Text(
+                      //               'Nhà ở ${listHouse[index].houseInfo.name}',
+                      //               style: TextStyle(
+                      //                 fontSize: 20,
+                      //                 fontWeight: FontWeight.w700,
+                      //               ),
+                      //             ),
+                      //             SizedBox(
+                      //               height: 5,
+                      //             ),
+                      //             Text(
+                      //               '${listHouse[index].houseInfo.address}',
+                      //               style: TextStyle(
+                      //                 fontSize: 16,
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     Positioned(
+                      //       top: 15,
+                      //       right: 10,
+                      //       child: Text(
+                      //         '${listHouse[index].status ? 'Đang thuê' : ''}',
+                      //         style: TextStyle(
+                      //           color: listHouse[index].status
+                      //               ? PrimaryColor
+                      //               : Color(0xFF707070),
+                      //           fontSize: 20,
+                      //           fontWeight: FontWeight.w700,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     Positioned(
+                      //       bottom: 10,
+                      //       right: 10,
+                      //       child: GestureDetector(
+                      //         onTap: () {
+                      //           Navigator.push(
+                      //             context,
+                      //             MaterialPageRoute(
+                      //                 builder: (context) => HouseSettingPage(
+                      //                     houseId: listHouse[index].id)),
+                      //           );
+                      //         },
+                      //         child: Icon(
+                      //           MyFlutterApp.cog,
+                      //           color: PrimaryColor,
+                      //           size: 28,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                     ),
                     secondaryActions: [
-                      IconSlideAction(
-                        caption: 'Delete',
-                        color: Colors.red,
-                        icon: Icons.delete,
+                      ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(20),
+                          bottomRight: Radius.circular(20),
+                        ),
+                        child: IconSlideAction(
+                          caption: 'Delete',
+                          color: Colors.red,
+                          icon: Icons.delete,
+                        ),
                       ),
                     ],
                   ),
