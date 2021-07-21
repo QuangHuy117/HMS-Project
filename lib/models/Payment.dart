@@ -5,6 +5,7 @@ class Payment {
   int amount;
   String note;
   bool status;
+  bool isConfirmed;
 
   Payment({
     this.id,
@@ -13,6 +14,7 @@ class Payment {
     this.amount,
     this.note,
     this.status,
+    this.isConfirmed,
   });
 
   factory Payment.fromJson(Map<String, dynamic> json) => Payment(
@@ -22,6 +24,7 @@ class Payment {
         amount: json["amount"],
         note: json["note"],
         status: json["status"],
+        isConfirmed: json["isConfirmed"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -31,5 +34,6 @@ class Payment {
         "amount": amount,
         "note": note,
         "status": status,
+        "isConfirmed": isConfirmed,
       };
 }

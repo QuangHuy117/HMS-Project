@@ -181,7 +181,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
                                 margin: EdgeInsets.only(left: 10),
                                 child: GestureDetector(
                                   child: Text(
-                                    detail.name == null ? 'N/A' : detail.name,
+                                    detail.name == null ? 'N/A' : 'Tên phòng: ' + detail.name,
                                     style: TextStyle(
                                         fontSize: 22,
                                         color: PrimaryColor,
@@ -235,7 +235,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
                                   child: Text(
                                     detail.roomSquare == null
                                         ? 'N/A'
-                                        : detail.roomSquare.toString(),
+                                        : 'Diện tích: ' + detail.roomSquare.toString() + ' m2',
                                     style: TextStyle(
                                         fontSize: 22,
                                         color: PrimaryColor,
@@ -289,7 +289,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
                                   child: Text(
                                     detail.defaultPrice == null
                                         ? 'N/A'
-                                        : detail.defaultPrice.toString(),
+                                        : 'Giá phòng: ' + detail.defaultPrice.toString() + 'đ',
                                     style: TextStyle(
                                         fontSize: 22,
                                         color: PrimaryColor,

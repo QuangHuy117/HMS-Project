@@ -237,7 +237,7 @@ class _ListRoomUsingState extends State<ListRoomUsing> {
                                   ),
                                 ),
                                 Container(
-                                  padding: EdgeInsets.symmetric(vertical: 5),
+                                  padding: EdgeInsets.symmetric(vertical: 10),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment: CrossAxisAlignment.end,

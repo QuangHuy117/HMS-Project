@@ -155,7 +155,7 @@ class _ListContractPageState extends State<ListContractPage> {
                 Container(
                   width: size.width,
                   height: size.height * 0.08,
-                  padding: EdgeInsets.only(top: 5, right: 10, left: 25),
+                  padding: EdgeInsets.only(top: 5, right: 10, left: 15),
                   child: Row(
                     children: [
                       Container(

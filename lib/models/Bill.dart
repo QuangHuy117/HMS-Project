@@ -19,7 +19,7 @@ class Bill {
   String note;
   bool isDeleted;
   bool isSent;
-  bool isPaidInFull;
+  bool isWaiting;
   Contract contract;
   List<BillItem> billItems;
   List<Payment> payments;
@@ -35,7 +35,7 @@ class Bill {
     this.note,
     this.isDeleted,
     this.isSent,
-    this.isPaidInFull,
+    this.isWaiting,
     this.contract,
     this.billItems,
     this.payments,
@@ -52,7 +52,7 @@ class Bill {
         note: json['note'] == null ? null : json['note'],
         isDeleted: json['isDeleted'],
         isSent: json['isSent'],
-        isPaidInFull: json['isPaidInFull'] == null ? null : json['isPaidInFull'],
+        isWaiting: json['isWaiting'] == null ? null : json['isWaiting'],
         contract: Contract.fromJson(json['contract']),
         billItems: json['billItems'] == null ? null : List<BillItem>.from(json['billItems'].map((x) => BillItem.fromJson(x))),
         payments: json['payments'] == null ? null : List<Payment>.from(json['payments'].map((x) => Payment.fromJson(x))),
@@ -69,7 +69,7 @@ class Bill {
         "note": note,
         "isDeleted": isDeleted,
         "isSent": isSent,
-        "isPaidInFull": isPaidInFull,
+        "isWaiting": isWaiting,
         "contract": contract.toJson(),
         "billItems": List<dynamic>.from(billItems.map((x) => x.toJson())),
         "payments": List<dynamic>.from(payments.map((x) => x.toJson())),

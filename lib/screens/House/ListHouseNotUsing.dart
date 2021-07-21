@@ -95,8 +95,9 @@ class _ListHouseNotUsingState extends State<ListHouseNotUsing> {
                       child: Row(
                         children: [
                           Container(
-                            width: size.height * 0.19,
-                            height: size.height * 0.19,
+                            padding: EdgeInsets.only(left: size.width * 0.01),
+                            width: size.height * 0.18,
+                            height: size.height * 0.18,
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: Image.network(

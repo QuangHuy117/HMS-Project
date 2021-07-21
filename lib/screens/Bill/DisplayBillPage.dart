@@ -43,7 +43,7 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
   Future confirmBill(BuildContext context) async {
     dynamic token = await FlutterSession().get("token");
     var jsonData = null;
-    var url = Uri.parse('https://$serverHost/api/bills/confirm?id=${bill.id}');
+    var url = Uri.parse('https://$serverHost/api/bills/confirm');
     try {
       var response = await http.post(
         url,
@@ -51,6 +51,10 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
           'Content-Type': 'application/json; charset=UTF-8',
           HttpHeaders.authorizationHeader: 'Bearer ${token.toString()}'
         },
+        body: jsonEncode({
+          "id": bill.id, 
+          "note": note.text,
+          }),
       );
       print(response.statusCode);
       if (response.statusCode == 200) {
@@ -63,7 +67,6 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
       throw (error);
     }
   }
-
 
   denyBill() async {
     dynamic token = await FlutterSession().get("token");
@@ -157,24 +160,6 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
                               color: Color(0xFF707070).withOpacity(1)),
                         ),
                       ),
-                      // Container(
-                      //   margin: EdgeInsets.only(bottom: 20),
-                      //   width: size.width * 0.75,
-                      //   child: TextField(
-                      //     controller: note,
-                      //     decoration: InputDecoration(
-                      //       prefixIcon: Icon(
-                      //         MyFlutterApp.clipboard,
-                      //         size: 26,
-                      //       ),
-                      //       hintText: 'Ghi chú',
-                      //       hintStyle: TextStyle(
-                      //           fontSize: 20,
-                      //           color: Color(0xFF707070).withOpacity(0.5),
-                      //           fontWeight: FontWeight.w500),
-                      //     ),
-                      //   ),
-                      // ),
                       SizedBox(
                         height: 20,
                       ),
@@ -411,7 +396,7 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
                         ),
                       ),
                       SizedBox(
-                        height: 20,
+                        height: size.height * 0.025,
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -432,7 +417,7 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
                         ),
                       ),
                       SizedBox(
-                        height: 10,
+                        height: size.height * 0.01,
                       ),
                       Divider(
                         thickness: 2,
@@ -441,7 +426,32 @@ class _DisplayBillPageState extends State<DisplayBillPage> {
                         color: Colors.grey,
                       ),
                       SizedBox(
-                        height: 30,
+                        height: size.height * 0.01,
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(bottom: 20),
+                        width: size.width * 0.75,
+                        child: TextField(
+                          maxLines: 2,
+                          controller: note,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              MyFlutterApp.clipboard,
+                              size: 26,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            hintText: 'Ghi chú',
+                            hintStyle: TextStyle(
+                                fontSize: 20,
+                                color: Color(0xFF707070).withOpacity(0.5),
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.02,
                       ),
                       Container(
                         child: Row(
